@@ -7,7 +7,7 @@ Tarefas a fazer:
 - Posteriormente, melhorias dos parâmetros utilizados na classe para melhor resultado
 - Leitura da imagem quando quadros iguais;
   
-Para o artigo (37 Dias restantes):
+Para o artigo (33 Dias restantes):
 - Realização dos testes com diferentes thresholds (0 a 100% ~ pular de 10% em 10%);
 - Matriz de quadros iguais explicativa;
 - Gráfico (linear) entre limiar e quadros descartados (60 quadros/segundo ~ 16 ms/quadro);
