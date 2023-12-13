@@ -1,3 +1,10 @@
+# This code is responsible to writing the coordenates from each video.
+# Just to automatize the process, we create one code to create the txt file
+# that contains each detection from each frame.
+# The txt is in this form:
+# [nºclass[coord.],nºclass[coord.]
+# Each line is from one frame, so line 1 -> frame 1, line 2 -> frame 2 etc.
+
 import time
 import numpy as np
 import cv2 as cv
@@ -20,13 +27,14 @@ model = YOLO('yolov8n.pt')
 # Percorrer o diretório onde contém os arquivos de vídeo
 # Open the video
 
-VID = (os.listdir("D:/IC/datasets/imagenetVID/videos/train/"))
-path = "D:/IC/txt_myolo_500000/"
+dir = "C:/Users/hugol/Desktop/IC/datasets/train/"
+VID = (os.listdir(dir))
+path = "C:/Users/hugol/Desktop/IC/datasets/testando/"
 
 for x in range(len(VID)):
     lista = []
     file = VID[x]
-    cap = cv.VideoCapture("D:/IC/datasets/imagenetVID/videos/train/" + VID[x])
+    cap = cv.VideoCapture(dir + VID[x])
     video = VID[x]
     F = -1 # Contador de frames (loops)
     # Loop through the video frames

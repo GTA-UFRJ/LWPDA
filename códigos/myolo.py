@@ -3,23 +3,34 @@
 # Alterações nos testes -> fazer os testes com outros limiares
 # Overleaf com o artigo -> email do GTA salvo
 # Definir estratégias para os testes -> limiares, como medir quadros cortados (em segundos?) etc
+'''
+- Author: Hugo Antunes (antunes@gta.ufrj.br)
 
+- From: Grupo de Telecomunicação e Automação (UFRJ/COPPE) - Rio de Janeiro - Brazil
+
+- Professors: Rodrigo de Souza Couto (rodrigo@gta.ufrj.br) and 
+Pedro Henrique Cruz Caminha (cruz@gta.ufrj.br)
+
+- Description: This code is the class used for trying to decrease a potencially delay
+when using YOLO on real-time applications. The main idea is in the README file on GIT.
+'''
+
+# Libraries
 import math
 import warnings
 from pathlib import Path
-
 import re
 import time
 import cv2 as cv
 import os
 from ultralytics import YOLO
-
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
-
 from ultralytics.utils import LOGGER, SimpleClass, TryExcept, plt_settings
 
+
+# Class
 class myolo():
     def write(namevid:str,lista, A = 1, path = ""):
             # Exemplo:
@@ -42,12 +53,12 @@ class myolo():
     def compare(imgb,imga,thresh, A):
 
         if A == 0: return # A = 0 desliga a comparação
-
-        # comparar duas imagens, imgb (before), imga(after). thresh é o limiar que definiremos
-        # limiar é o valor que obtivemos expirimentalmente como adequado para decidir se uma imagem é ou não similar
-        # além disso, a similaridade de pixels também deveria ser definida (por mim)
-        # retorna True or False
-        # comp, width, pix = len(imga[0]),len(imga), width*comp
+        # Compare two images, imgb(before), imga(after)
+        # Thresh is the threshold that measure how similar the images must be
+        # We sum every value of RGB (3) of every pixel (640x480)
+        # So, the max value (if the images is literally the same) is 3x640x480 = 921000
+        # Return True (The images are similar) or False
+        # comp,width, pix = len(imga[0]),len(imga), width*comp
 
         x = abs((imgb-imga))
         z = ((0 <= x) & (x <= 10)).sum()
@@ -176,3 +187,4 @@ class myolo():
                 parciais = []
             save.write(str(resultados)+'\n')
             resultados = []
+            return
