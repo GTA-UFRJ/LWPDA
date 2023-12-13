@@ -1,5 +1,7 @@
 # BetterYolo
 Redução do envio de envios de quadros para processamento do YOLO utilizando o OpenCV
+Por ora, esse README é apenas um quadro de tarefas a se fazer para melhor organização do trabalho.
+Posteriormente, será escrito um resumo, finalidade e manual de como utilizar os códigos dispostos nesse repositório.
 
 Tarefas a fazer:
 - Organização dos códigos (Check);
