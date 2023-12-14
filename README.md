@@ -10,7 +10,7 @@ Tarefas a fazer:
 - Posteriormente, melhorias dos parâmetros utilizados na classe para melhor resultado;
 - Leitura da imagem quando quadros iguais
   
-Para o artigo (33 Dias restantes):
+Para o artigo (32 Dias restantes):
 - Resumo (Check);
 - Abstract;
 - Introdução;
