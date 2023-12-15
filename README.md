@@ -10,13 +10,14 @@ Tarefas a fazer:
 - Posteriormente, melhorias dos parâmetros utilizados na classe para melhor resultado;
 - Leitura da imagem quando quadros iguais
   
-Para o artigo (32 Dias restantes):
-- Resumo (Check);
+Para o artigo (31 Dias restantes):
+- Resumo;
 - Abstract;
-- Introdução;
+- Introdução -> Contextualização (Câmeras de segurança), o problema do delay (explicá-lo), Proposta de solução, Comparação de quadros (explicar por alto);
 - Desenvolvimento -> Trabalhos relacionados, Metodologia, Experimentos, OpenCV, YOLO, Comparação RGB, Limiares, Dataset, Discussão e resultados etc (Não necessariamente nessa ordem);
 - Conclusão -> Trabalhos futuros;
-- Realização dos testes com diferentes thresholds e mAP (0 a 100% ~ pular de 10% em 10%);
-- Matriz de quadros iguais explicativa -> Cruz;
+- Realização dos testes com diferentes similaridades e mAP (0 a 100% ~ pular de 10% em 10%); (O código está quase pronto)
+- Testes comparando os tempos de processamento;
+- Matriz de quadros iguais explicativa -> Cruz; -> Introdução
 - Gráfico (linear) entre limiar e quadros descartados (60 quadros/segundo ~ 16 ms/quadro);
 - Verificar se há um ótimo
