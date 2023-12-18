@@ -10,7 +10,7 @@ Tarefas a fazer:
 - Posteriormente, melhorias dos parâmetros utilizados na classe para melhor resultado;
 - Leitura da imagem quando quadros iguais
   
-Para o artigo (31 Dias restantes):
+Para o artigo (28 Dias restantes):
 - Resumo;
 - Abstract;
 - Introdução -> Contextualização (Câmeras de segurança), o problema do delay (explicá-lo), Proposta de solução, Comparação de quadros (explicar por alto);
