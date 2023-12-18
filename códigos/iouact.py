@@ -12,7 +12,7 @@ def write_iou(wheresave:str, vidname:str, path1:str, path2:str, on = "1" ):
     # path1 => Ground truth
     # path2 = > Tests
     if on == 0: return
-    save = open(wheresave+vidname+'testandouwu', 'a')
+    save = open(wheresave+vidname+'testando', 'a')
     pathfile1, pathfile2 = path1+vidname, path2+vidname
     fileA = open(pathfile1, 'r')
     fileB = open(pathfile2, 'r')
