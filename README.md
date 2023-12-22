@@ -1,5 +1,9 @@
-# Autores: Hugo Antunes
-# Orientadores: Professor Rodrigo de Souza Couto e Pedro Henrique Cruz Caminha
+# Autor(es): 
+- Hugo Antunes
+  
+# Orientadores: 
+- Professor Rodrigo de Souza Couto e
+- Pedro Henrique Cruz Caminha
 
 # BetterYolo
 Redução do envio de envios de quadros para processamento do YOLO utilizando o OpenCV
