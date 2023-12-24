@@ -11,8 +11,8 @@ Por ora, esse README é apenas um quadro de tarefas a se fazer para melhor organ
 Posteriormente, será escrito um resumo, finalidade e manual de como utilizar os códigos dispostos nesse repositório.
 
 # Datas importantes:
-- 05/01 > férias do orientador Rodrigo (13 DIAS RESTANTES);
-- 15/01 > submissão do artigo (23 DIAS RESTANTES);
+- 05/01 > férias do orientador Rodrigo (12 DIAS RESTANTES);
+- 15/01 > submissão do artigo (22 DIAS RESTANTES);
 
 # Tarefas a fazer:
 - Organização dos códigos (Check);
@@ -25,7 +25,7 @@ Posteriormente, será escrito um resumo, finalidade e manual de como utilizar os
 - Resumo; (check)
 - Abstract; (não urgente)
 - Introdução -> Contextualização (Câmeras de segurança), o problema do delay (explicá-lo), Proposta de solução, Comparação de quadros (explicar por alto); (check)
-- Desenvolvimento -> Trabalhos relacionados, Metodologia, Experimentos, OpenCV, YOLO, Comparação RGB, Limiares, Dataset, Discussão e resultados etc (Não necessariamente nessa ordem) > *URGENTE*;
+- Desenvolvimento -> Trabalhos relacionados, Metodologia, Experimentos(Ground-Truth -> YOLO, carência de Dataset...), OpenCV, YOLO, Comparação RGB, Limiares, Dataset, Discussão e resultados etc (Não necessariamente nessa ordem) > *URGENTE*;
 - Conclusão -> Trabalhos futuros, Conclusão;
 - Realização dos testes com diferentes similaridades e mAP (0 a 100% ~ pular de 10% em 10%); (O código está quase pronto) *URGENTE*;
 - Testes comparando os tempos de processamento *URGENTE*;
