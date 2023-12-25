@@ -11,8 +11,8 @@ Por ora, esse README é apenas um quadro de tarefas a se fazer para melhor organ
 Posteriormente, será escrito um resumo, finalidade e manual de como utilizar os códigos dispostos nesse repositório.
 
 # Datas importantes:
-- 05/01 > férias do orientador Rodrigo (12 DIAS RESTANTES);
-- 15/01 > submissão do artigo (22 DIAS RESTANTES);
+- 05/01 > férias do orientador Rodrigo (11 DIAS RESTANTES);
+- 15/01 > submissão do artigo (21 DIAS RESTANTES);
 
 # Tarefas a fazer:
 - Organização dos códigos (Check);
