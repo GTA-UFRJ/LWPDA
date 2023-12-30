@@ -7,7 +7,7 @@ from txt import compare
 import os
 
 # write e compar ligam (1) suas funções
-writ = 1
+writ = 0
 compar = 1
 
 new_frame_time,prev_frame_time = 0,0

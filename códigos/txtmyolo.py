@@ -16,7 +16,6 @@ import os
 writ = 1
 compar = 1
 
-new_frame_time,prev_frame_time = 0,0
 # W é um verificador, caso o frame seja igual W = 1
 W = 0
 thresh = 500000
@@ -45,15 +44,8 @@ for x in range(len(VID)):
             break
 
         imga = frame
-        F +=1 #A cada loop, adicionar um ao contador (para ajudar na nomeação do txt)
+        #A cada loop, adicionar um ao contador (para ajudar na nomeação do txt)
         #name = str(video)+ '_' +str(F) #nome do arquivo txt
-
-        #FPS
-        #new_frame_time = time.time()
-        #fps = 1/(new_frame_time - prev_frame_time)
-        #prev_frame_time = new_frame_time
-        #fps = str(int(fps))
-        #print(fps)
 
         try: 
             if my.compare(imgb,imga,thresh,compar):
