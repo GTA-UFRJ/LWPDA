@@ -1,12 +1,12 @@
 # Rio de janeiro, 15 de Janeiro de 2024.
 
-Grupo de Telecomunicação e Automação (GTA) - (COPPE/UFRJ)
+Grupo de Telecomunicação e Automação (GTA) - COPPE/UFRJ
 
-# Autor(es): 
+# Autor: 
 - Hugo Antunes
   
 # Orientadores: 
-- Professor Rodrigo de Souza Couto e
+- Rodrigo de Souza Couto
 - Pedro Henrique Cruz Caminha
 
 # Resumo
@@ -15,3 +15,6 @@ A detecção de objetos em tempo real é um desafio comum em diferentes contexto
 # Comparação
 Redução do envio de envios de quadros para processamento do YOLO, por meio do descarte de quadro similares. Esse descarte é feito por meio da função "Compare" que está encontrada no na classe myolo em codes/myolo.py
 A similaridade é medida utilizando os valores RGB de cada pixel das duas imagens a serem comparadas.
+
+# Uso
+Para a utilização adequada do algoritmo, recomenda-se um limiar entre 40% e 50% do total de valores RGB do vídeo/câmera. Um código exemplo está disponível em codes/UsingMyolo.
