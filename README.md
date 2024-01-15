@@ -1,8 +1,6 @@
 # Rio de janeiro, 15 de Janeiro de 2024.
 
-Grupo de Telecomunicação e Automação (GTA) 
-
-              (COPPE/UFRJ)
+Grupo de Telecomunicação e Automação (GTA) - (COPPE/UFRJ)
 
 # Autor(es): 
 - Hugo Antunes
