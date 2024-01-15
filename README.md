@@ -1,3 +1,7 @@
+Rio de janeiro, 15 de Janeiro de 2024.
+Grupo de Telecomunicação e Automação (GTA) 
+              (COPPE/UFRJ)
+
 # Autor(es): 
 - Hugo Antunes
   
@@ -5,30 +9,17 @@
 - Professor Rodrigo de Souza Couto e
 - Pedro Henrique Cruz Caminha
 
-# BetterYolo
-Redução do envio de envios de quadros para processamento do YOLO utilizando o OpenCV
-Por ora, esse README é apenas um quadro de tarefas a se fazer para melhor organização do trabalho.
-Posteriormente, será escrito um resumo, finalidade e manual de como utilizar os códigos dispostos nesse repositório.
+# Resumo
+A detecção de objetos em tempo real é um desafio comum em difer-
+entes contextos, como em carros autônomos e vigilância por câmeras de segu-
+rança. Entretanto, o processamento de vídeos em tempo real exige um alto
+poder computacional, essa exigência torna comum a ocorrência de atrasos.
+Essa demora afeta diretamente essas aplicações, já que elas necessitam que a
+detecção seja feita o quanto antes. Assim, esse artigo propõe uma comparação
+de quadros sequenciais por meio da utilização dos valores RGB de cada pixel.
+Aqueles quadros que forem julgados semelhantes não serão enviados para pro-
+cessamento, o que diminui significativamente o tempo de processamento.
 
-# Datas importantes:
-- 05/01 > férias do orientador Rodrigo (11 DIAS RESTANTES);
-- 15/01 > submissão do artigo (21 DIAS RESTANTES);
-
-# Tarefas a fazer:
-- Organização dos códigos (Check);
-- Criação da classe para redução de frames; (Check)
-- Consolidação de testes utilizando vídeos (ImageNet VID dataset) para o benchmark; (Check)
-- Posteriormente, melhorias dos parâmetros utilizados na classe para melhor resultado;
-- Leitura da imagem quando quadros iguais (não urgente)
-  
-# Para o artigo;
-- Resumo; (check)
-- Abstract; (não urgente)
-- Introdução -> Contextualização (Câmeras de segurança), o problema do delay (explicá-lo), Proposta de solução, Comparação de quadros (explicar por alto); (check)
-- Desenvolvimento -> Trabalhos relacionados, Metodologia, Experimentos(Ground-Truth -> YOLO, carência de Dataset...), OpenCV, YOLO, Comparação RGB, Limiares, Dataset, Discussão e resultados etc (Não necessariamente nessa ordem) > *URGENTE*;
-- Conclusão -> Trabalhos futuros, Conclusão;
-- Realização dos testes com diferentes similaridades e mAP (0 a 100% ~ pular de 10% em 10%); (O código está quase pronto) *URGENTE*;
-- Testes comparando os tempos de processamento *URGENTE*;
-- Matriz de quadros iguais explicativa -> Cruz; (Desenvolvimento) 
-- Gráfico (linear) entre limiar e quadros descartados (60 quadros/segundo ~ 16 ms/quadro);
-- Verificar se há um ótimo
+# Comparação
+Redução do envio de envios de quadros para processamento do YOLO, por meio do descarte de quadro similares. Esse descarte é feito por meio da função "Compare" que está encontrada no na classe myolo em codes/myolo.py
+A similaridade é medida utilizando os valores RGB de cada pixel das duas imagens a serem comparadas.
