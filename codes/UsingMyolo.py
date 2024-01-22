@@ -14,6 +14,22 @@ compar = 1
 # Threshold of the function compare
 threshold = 300000
 
+def compare(imgb,imga,thresh, A):
+
+    if A == 0: return # A = 0 desliga a comparação
+    # Compare two images, imgb(before), imga(after)
+    # Thresh is the threshold that measure how similar the images must be
+    # We sum every value of RGB (3) of every pixel (640x480)
+    # So, the max value (if the images is literally the same) is 3x640x480 = 921000
+    # Return True (The images are similar) or False
+    # comp,width, pix = len(imga[0]),len(imga), width*comp
+
+    x = abs((imgb-imga))
+    z = ((0 <= x) & (x <= 10)).sum()
+    if z >= thresh:
+        return True
+    return False
+
 def Cam(VID,threshold,compar):
 
     # This code is to using the compare function of the class Myolo
@@ -45,7 +61,7 @@ def Cam(VID,threshold,compar):
         imga = frame
 
         try: 
-            if my.compare(imgb,imga,threshold,compar):
+            if compare(imgb,imga,threshold,compar):
                 #frame = imgb
                 classes = (results[0].boxes.cls.tolist())
                 coord = (results[0].boxes.xyxy.tolist())
