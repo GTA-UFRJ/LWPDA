@@ -4,15 +4,16 @@ from ultralytics import YOLO
 from ultralytics.utils.plotting import Annotator
 from myolo import myolo as my
 from random import randint
+from comparisons import methods as comp
 
 # An example how to use the function compare!
 # If you want to use webcam, VID = int(0)
-VID = "C:/Users/hugol/Desktop/IC/datasets/train/ILSVRC2015_train_00005003.mp4"
-VID = 0
+VID = "C:/Users/amoot/Desktop/IMAGENET/amostra/ILSVRC2015_train_00117034.mp4"
+#VID = 0
 # Turn on or turn off the function compare
 compar = 1
 # Threshold of the function compare
-threshold = 300000
+threshold = 0
 
 def compare(imgb,imga,thresh, A):
 
@@ -61,7 +62,7 @@ def Cam(VID,threshold,compar):
         imga = frame
 
         try: 
-            if compare(imgb,imga,threshold,compar):
+            if comp.ssim(imgb,imga,threshold):
                 #frame = imgb
                 classes = (results[0].boxes.cls.tolist())
                 coord = (results[0].boxes.xyxy.tolist())
