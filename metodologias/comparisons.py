@@ -19,8 +19,6 @@ class methods():
         return np.mean((image1 - image2) ** 2, dtype=np.float64)
     def histogram(image1,image2,t):
         # Maior similaridade = 1 (figuras iguais) -> quanto mais próximo de 1, mais similar
-        image1 = cv.imread(image1)
-        image2 = cv.imread(image2)
         hist_img1 = cv.calcHist([image1], [0, 1, 2], None, [256, 256, 256], [0, 256, 0, 256, 0, 256])
         hist_img1[255, 255, 255] = 0 #ignore all white pixels
         cv.normalize(hist_img1, hist_img1, alpha=0, beta=1, norm_type=cv.NORM_MINMAX)

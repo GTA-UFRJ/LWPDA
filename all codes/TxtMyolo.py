@@ -25,7 +25,7 @@ model = YOLO('yolov8n.pt')
 
 dir = "C:/Users/amoot/Desktop/IMAGENET/amostra/"
 VID = (os.listdir(dir))
-for tr in range(10):
+for tr in range(4,10):
     path = f"C:/Users/amoot/Desktop/GTA/PUYM/tests/histogram/txt_0.{tr}/"
 
     for x in range(len(VID)):
@@ -85,3 +85,6 @@ for tr in range(10):
             W = 0
         print(lista)
         my.write(file, lista, A = 1, path = str(path))
+
+time.sleep(30)
+os.system("shutdown /s /t 1") 
