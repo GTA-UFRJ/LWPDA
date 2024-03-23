@@ -3,7 +3,7 @@ import time
 import cv2 as cv
 from ultralytics import YOLO
 from ultralytics.utils.plotting import Annotator
-from myolo import myolo as my
+from class_myolo import myolo as my
 import os
 import time
 
