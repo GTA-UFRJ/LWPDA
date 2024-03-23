@@ -18,5 +18,3 @@ A similaridade é medida utilizando os valores RGB de cada pixel das duas imagen
 
 # Uso
 Para a utilização adequada do algoritmo, recomenda-se um limiar entre 40% e 50% do total de valores RGB do vídeo/câmera. Um código exemplo está disponível em codes/UsingMyolo.
-
-Para mais informações sobre o algoritmo presente neste Git, é interessante a leitura do PDF relacionado a esse trabalho (URL:~)
