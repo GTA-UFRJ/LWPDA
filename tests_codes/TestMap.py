@@ -1,7 +1,7 @@
 # This code is responsible to calculate the mean average precision (mAP)
 
 #Libs
-from myolo import myolo as my
+from class_myolo import myolo as my
 import numpy as np
 import scipy.stats as st
 import statistics
