@@ -15,9 +15,10 @@ when using YOLO on real-time applications. The main idea is in the README file o
 # Libraries
 import time
 import numpy as np
-import cv2
+import cv2 as cv
 from ultralytics import YOLO
 import os
+from ultralytics.utils.plotting import Annotator
 
 class lwpda():
     def compare(imgA,imgB,thresh:int):
@@ -38,7 +39,7 @@ class lwpda():
         '''
 
         model = YOLO('yolov8n.pt')
-        cap = cv2.VideoCapture(pathVideo)
+        cap = cv.VideoCapture(pathVideo)
         listBB = []
         
         # Discover video name to use in txt result
@@ -89,7 +90,7 @@ class lwpda():
                 #cv.imshow("YOLOv8 Inference", annotated_frame)
                 imgb = frame
                 # Break the loop if 'q' is pressed
-                if cv2.waitKey(1) & 0xFF == ord("q"):
+                if cv.waitKey(1) & 0xFF == ord("q"):
                     break
 
             # Reset flag
@@ -106,7 +107,7 @@ class lwpda():
         
         return
 
-  def iou(lista1:list, lista2:list): 
+    def iou(lista1:list, lista2:list): 
         '''
         IOU is a common metric to compare the precision of the bounding boxes
         In our article, we used the original Bounding Box (YOLO precision) as Ground-Truth
@@ -133,7 +134,7 @@ class lwpda():
     
         return iou
 
-  def timeVideos(pathDir:str, pathResult:str, thresh:int, nameTxtFile = 'testvideo'):
+    def timeVideos(pathDir:str, pathResult:str, thresh:int, nameTxtFile = 'testvideo'):
         '''
         Generate txt with processing time of each video
         Txts are used to compare the processing time
@@ -208,7 +209,7 @@ class lwpda():
             timeVideos += [end - start]
 
         # write in a txt the results
-        if pathResul[-1] != '/': pathResult = pathResult + '/'
+        if pathResult[-1] != '/': pathResult = pathResult + '/'
         
         with open(pathResult + nameTxtFile + '.txt', 'w') as arquivo:
             for x in range(len(timeVideos)):
