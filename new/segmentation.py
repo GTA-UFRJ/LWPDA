@@ -1,61 +1,63 @@
-import cv2 as cv
+import cv2
 import numpy as np
-from ultralytics import solutions
+from ultralytics import YOLO
 
-def compare(imgA,imgB,thresh:int):
-    '''
-    Compare two images (A and B) using RGB values
-    thresh is the threshold which help to know when images is similar.
-    '''
-    x = abs((imgB-imgA))
-    z = ((0 <= x) & (x <= 10)).sum()
-    if z >= thresh:
-        return True
-    return False
+# Carregar modelo de segmentação do YOLO
+model = YOLO("yolov8n-seg.pt")  # Certifique-se de ter o modelo correto
 
-# Inicializar captura de vídeo
-cap = cv.VideoCapture("D:/Arquivos/Desktop/LWPDA/videoTest.mp4")
-assert cap.isOpened(), "Erro ao ler o arquivo de vídeo"
+def isSimilar(actualFrame, previousFrame, threshold:int) -> bool:
+        '''
+        Compare two images (A and B) using RGB values
+        Threshold assists us to know when images is similar.
+        '''
+        if previousFrame is None: return False 
+        x = abs((previousFrame-actualFrame))
+        z = ((0 <= x) & (x <= 10)).sum()
+        if z >= threshold:
+            actualFrame = previousFrame
+            return True
+        return False
 
-# Configuração do escritor de vídeo
-w, h, fps = (int(cap.get(x)) for x in (cv.CAP_PROP_FRAME_WIDTH, cv.CAP_PROP_FRAME_HEIGHT, cv.CAP_PROP_FPS))
-video_writer = cv.VideoWriter("isegment_output.avi", cv.VideoWriter_fourcc(*"mp4v"), fps, (w, h))
+# Captura de vídeo
+cap = cv2.VideoCapture("car.mp4")
+previousFrame = None
 
-# Inicializar segmentação
-isegment = solutions.InstanceSegmentation(
-    show=True,
-    model="yolov8n-seg.pt",
-    verbose=False
-)
-
-# Inicializa variáveis
-count = 0
-imgB = None  # Variável para armazenar o último frame
-last_annotated_frame = None  # Última marcação válida
-
-# Processamento do vídeo
 while cap.isOpened():
-    success, im0 = cap.read()
-    if not success:
-        print("Processamento do vídeo concluído ou quadro vazio.")
+    ret, actualFrame = cap.read()
+    if not ret:
         break
 
-    # Redimensionar quadro
-    width, height, totalPixel = 640, 480, 640 * 480
-    resized_im0 = cv.resize(im0, (width, height))
+    if previousFrame is None:
+        totalPixels = len(actualFrame[0])*len(actualFrame)*3
+        threshold = totalPixels*0.3
 
-    if imgB is not None:
-        if compare(resized_im0, imgB, thresh=totalPixel * 3 * 0.45):
-            imgB = resized_im0
-            count += 1
-            print(f"Quadros semelhantes detectados: {count}")
-        else: 
-            results = isegment(resized_im0)
-            
-            
-            
-    imgB = resized_im0  # Atualiza o frame anterior para comparação
+    if isSimilar(actualFrame, previousFrame, threshold):
+        print('parecidos')
+        # Repeat segmentation from previous frame
+        for result in results:
+            if result.masks == None: break
+            masks = result.masks.xy  # Mask coordenates
+            for mask in masks:
+                mask = np.array(mask, dtype=np.int32)
+                cv2.polylines(actualFrame, [mask], True, (0, 255, 0), 2)
+        
+    else:
+        # Process YOLO Segmentation
+        print('processando')
+        previousFrame = actualFrame
+        results = model(actualFrame,verbose=False)
+        print(type(results))
+        # Desenhar resultados na imagem
+        for result in results:
+            if result.masks == None: break
+            masks = result.masks.xy  # Coordenadas das máscaras
+            for mask in masks:
+                mask = np.array(mask, dtype=np.int32)
+                cv2.polylines(actualFrame, [mask], True, (0, 255, 0), 2)  # Contorno das máscaras
+
+    # Show result
+    cv2.imshow("Segmentação YOLO", actualFrame)
+    cv2.waitKey(1)
 
 cap.release()
-video_writer.release()
-cv.destroyAllWindows()
+cv2.destroyAllWindows()
