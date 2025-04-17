@@ -30,10 +30,11 @@ class lwpda():
         if previousFrame is None: return False 
         x = abs((previousFrame-actualFrame))
         z = ((0 <= x) & (x <= 10)).sum()
-        if z >= threshold:
-            actualFrame = previousFrame
-            return True
-        return False
+        return z>= threshold
+        # if z >= threshold:
+        #     actualFrame = previousFrame
+        #     return True
+        # return False
 
     def knowVideoName(pathVideo:str) -> str:
         '''
@@ -76,7 +77,7 @@ class lwpda():
                 file.write('['+ str(classe[y])+ ','+ str(coord[y])+ ']' + ',')
             file.write(']'+'\n')
 
-    def processingActualFrame(model, actualFrame, previousFrame, annotatedFrame):
+    def processingActualFrame(model, actualFrame, previousFrame, annotatedFrame) -> list:
         '''
         Processing Yolo and saving detections to write it on txts
         '''
@@ -114,7 +115,7 @@ class lwpda():
             totalRGB = len(actualFrame)*len(actualFrame[0])*3
             threshold = totalRGB*threshold/100
 
-            if previousFrame is not None and lwpda.isSimilar(previousFrame, actualFrame, threshold): 
+            if previousFrame is not None and lwpda.isSimilar(actualFrame, previousFrame, threshold): 
                 # Repeat bounding boxes from previous frame
                 annotatedFrame = lwpda.repeatDetectionsPreviousFrame(actualFrame, results)
 
@@ -189,7 +190,7 @@ class lwpda():
                 totalRGB = len(actualFrame)*len(actualFrame[0])*3
                 threshold = totalRGB*threshold/100
 
-                if previousFrame is not None and lwpda.isSimilar(previousFrame, actualFrame, threshold): 
+                if previousFrame is not None and lwpda.isSimilar(actualFrame, previousFrame, threshold): 
                     # Repeat bounding boxes from previous frame
                     annotatedFrame = lwpda.repeatDetectionsPreviousFrame(actualFrame, results)
 
@@ -229,7 +230,7 @@ class lwpda():
         
         lwpda.writeVideoTimes(videoTimes, pathResult, txtName)
 
-    def CalculatingFramesProcessTime(pathVideo:str, threshold:int) -> list:
+    def calculatingFramesProcessTime(pathVideo:str, threshold:int) -> list:
         '''
         Calculate process time of each frame from a video using LWPDA
         '''
@@ -259,7 +260,7 @@ class lwpda():
             totalRGB = len(actualFrame)*len(actualFrame[0])*3
             threshold = totalRGB*threshold/100
 
-            if previousFrame is not None and lwpda.isSimilar(previousFrame, actualFrame, threshold): 
+            if previousFrame is not None and lwpda.isSimilar(actualFrame, previousFrame, threshold): 
                 # Repeat bounding boxes from previous frame
                 annotatedFrame = lwpda.repeatDetectionsPreviousFrame(actualFrame, results)
 
@@ -283,6 +284,7 @@ class lwpda():
             file.write(f'[{framesTimes[x]}]\n')
 
     def timeFrames(pathDir:str, pathResult:str , threshold:int) -> None:
+
         allVideos = os.listdir(pathDir)
         for video in allVideos:
             txtName = lwpda.knowVideoName(video)
