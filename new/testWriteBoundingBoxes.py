@@ -1,3 +1,3 @@
 from LWPDA import lwpda
 
-lwpda.timeFrames('C:/Users/hugol/Desktop/videosTest/', 'C:/Users/hugol/Desktop/videosTest/', 50)
+lwpda.writingDetections('C:/Users/hugol/Desktop/videosTest/', 'C:/Users/hugol/Desktop/videosTest/', 0)

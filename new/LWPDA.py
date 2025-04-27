@@ -51,11 +51,11 @@ class lwpda():
         Repeating annotations from the last processed frame
         '''
 
+        classes, coordenates = (results[0].boxes.cls.tolist()), (results[0].boxes.xyxy.tolist())
         # Saving detections to write in txt later
         if boundingBoxes is not None:
             boundingBoxes += [[classes]+[coordenates]]
 
-        classes, coordenates = (results[0].boxes.cls.tolist()), (results[0].boxes.xyxy.tolist())
         # Repeating annotations
         annotations = Annotator(actualFrame)
         for r in range (len(classes)):
@@ -69,15 +69,7 @@ class lwpda():
         '''
         with open(str(pathResult)+'/'+str(txtName)+'.txt','w') as file:
             for x in range(len(boundingBoxes)):
-                classe = boundingBoxes[x][0]
-                coord = boundingBoxes[x][1]
-                file.write('[')
-                if classe == []:
-                    file.write('[[], []]\n')
-                else:    
-                    for y in range(len(coord)):
-                        file.write('['+ str(classe[y])+ ','+ str(coord[y])+ ']' + ',')
-                        file.write(']'+'\n')
+                file.write(str(boundingBoxes[x])+'\n')
             file.close()
 
     def processingActualFrame(model, actualFrame, previousFrame, boundingBoxes) -> list:
@@ -130,9 +122,9 @@ class lwpda():
                 previousFrame = actualFrame
 
             # Display the annotated frame
-            cv.imshow("YOLOv8 Inference with LWPDA", annotatedFrame)
+            #cv.imshow("YOLOv8 Inference with LWPDA", annotatedFrame)
             #cv.waitKey(int(1000/(cap.get(cv.CAP_PROP_FPS))))
-            cv.waitKey(1)
+            #cv.waitKey(1)
 
         return boundingBoxes
 
