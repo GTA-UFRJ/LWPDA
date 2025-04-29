@@ -4,7 +4,7 @@ from ultralytics import YOLO
 
 # Carregar modelo de segmentação do YOLO
 model = YOLO("yolov8n-seg.pt")  # Certifique-se de ter o modelo correto
-
+media = 'C:/Users/hugol/Desktop/Dataset ImageNetVID/ILSVRC2015_train_00005003.mp4'
 def isSimilar(actualFrame, previousFrame, threshold:int) -> bool:
         '''
         Compare two images (A and B) using RGB values
@@ -19,7 +19,7 @@ def isSimilar(actualFrame, previousFrame, threshold:int) -> bool:
         return False
 
 # Captura de vídeo
-cap = cv2.VideoCapture("car.mp4")
+cap = cv2.VideoCapture(media)
 previousFrame = None
 
 while cap.isOpened():
@@ -29,34 +29,34 @@ while cap.isOpened():
 
     if previousFrame is None:
         totalPixels = len(actualFrame[0])*len(actualFrame)*3
-        threshold = totalPixels*0.3
+        threshold = totalPixels*1
 
     if isSimilar(actualFrame, previousFrame, threshold):
         print('parecidos')
         # Repeat segmentation from previous frame
-        for result in results:
-            if result.masks == None: break
-            masks = result.masks.xy  # Mask coordenates
-            for mask in masks:
-                mask = np.array(mask, dtype=np.int32)
-                cv2.polylines(actualFrame, [mask], True, (0, 255, 0), 2)
-        
+        result = results[0]
+        if result.masks == None: break
+        masks = result.masks.xy  # Mask coordenates
+        for mask in masks:
+            mask = np.array(mask, dtype=np.int32)
+            cv2.polylines(actualFrame, [mask], True, (0, 255, 0), 2)
+
     else:
         # Process YOLO Segmentation
         print('processando')
         previousFrame = actualFrame
         results = model(actualFrame,verbose=False)
-        print(type(results))
         # Desenhar resultados na imagem
-        for result in results:
-            if result.masks == None: break
-            masks = result.masks.xy  # Coordenadas das máscaras
-            for mask in masks:
-                mask = np.array(mask, dtype=np.int32)
-                cv2.polylines(actualFrame, [mask], True, (0, 255, 0), 2)  # Contorno das máscaras
+        if results[0].masks == None: break
+        masks = results[0].masks.xy  # Coordenadas das máscaras
+        im = results[0].plot(boxes = False)
+        # im.show()
+        # for mask in masks:
+        #     mask = np.array(mask, dtype=np.int32)
+        #     cv2.polylines(actualFrame, [mask], True, (0, 255, 0), 2)  # Contorno das máscaras
 
     # Show result
-    cv2.imshow("Segmentação YOLO", actualFrame)
+    cv2.imshow("Segmentação YOLO", im)
     cv2.waitKey(1)
 
 cap.release()

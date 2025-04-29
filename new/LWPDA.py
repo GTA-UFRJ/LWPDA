@@ -21,9 +21,12 @@ import os
 from ultralytics.utils.plotting import Annotator
 
 class lwpda():
-    def __init__(self, model, verbose = True):
+    def __init__(self, model, threshold = 0, verbose = True, show = True):
         self.model = model
         self.verbose = verbose
+        self.show = show
+        self.threshold = threshold
+        print(f'Threshold set to: {self.threshold}')
         return
 
     def isSimilar(self, actualFrame, previousFrame, threshold) -> bool:
@@ -47,65 +50,45 @@ class lwpda():
         if '/' not in pathVideo: name = pathVideo[:-4]
         return name
 
-    def repeatDetectionsPreviousFrame(self, actualFrame, results, boundingBoxes):
+    def writingDetections(self, pathDir:str, pathResult:str) -> None:
+
+        allVideos = os.listdir(pathDir)
+        videoFiles = [file for file in allVideos if file.endswith((".mp4", ".avi"))]
+
+        for video in videoFiles:
+            txtName = lwpda.knowVideoName(self, video)
+            boundingBoxes, masks = lwpda.calculatingDetectionsTxt(self, pathDir+'/'+video)
+            lwpda.writingBoundingBoxes(self, boundingBoxes, pathResult, txtName)
+            lwpda.writingMasks(self, masks, pathResult, txtName+'masks')
+
+    def knowVideoName(self, pathVideo:str) -> str:
         '''
-        Repeating annotations from the last processed frame
+        Function to determine the txt name of the video that will be saved
         '''
-        # Debug
-        if self.verbose: print('Repeating detections')
+        for x in range(len(pathVideo)):
+            if pathVideo[-x] == '/' or pathVideo[-x] == "\\":
+                name = pathVideo[-x+1:][:-4]
+                break
+        if '/' not in pathVideo: name = pathVideo[:-4]
+        return name
 
-        classes, coordenates = (results[0].boxes.cls.tolist()), (results[0].boxes.xyxy.tolist())
-        # Saving detections to write in txt later
-        if boundingBoxes is not None:
-            boundingBoxes += [[classes]+[coordenates]]
-
-        # Repeating annotations
-        annotations = Annotator(actualFrame)
-        for r in range (len(classes)):
-            annotations.box_label(coordenates[r],str(int(classes[r])))
-
-        return annotations.result()
-
-    def writingBoundingBoxes(self, boundingBoxes: list, pathResult: str, txtName: str) -> None:
-        '''
-        Write txts from the bounding boxes to a especifc path
-        '''
-        with open(str(pathResult)+'/'+str(txtName)+'.txt','w') as file:
-            for x in range(len(boundingBoxes)):
-                file.write(str(boundingBoxes[x])+'\n')
-            file.close()
-
-    def processingActualFrame(self, model, actualFrame, previousFrame, boundingBoxes) -> list:
-        '''
-        Processing Yolo and saving detections to write it on txts
-        '''
-        if self.verbose: print('Processing frame')
-        # Processing the model
-        results = model(actualFrame, verbose = self.verbose)
-        print()
-        # Saving detections to write in txt later
-        if boundingBoxes is not None:
-            classes, coordenates = (results[0].boxes.cls.tolist()), (results[0].boxes.xyxy.tolist())
-            boundingBoxes += [[classes]+[coordenates]]
-
-        return results
-
-    def calculatingDetectionsTxt(self, pathVideo:str, threshold:int) -> list:
+    def calculatingDetectionsTxt(self, pathVideo:str) -> list:
         '''
         Generate each bounding box from a video
         Threshold is in a interval from 0 to 100
         Bounding Boxes are used to calculating mAP
         '''
 
-        model = YOLO('yolov8n.pt')
+        model = YOLO(self.model)
         cap = cv.VideoCapture(pathVideo)
         boundingBoxes = []
+        masks = []
         previousFrame = None
 
         width = int(cap.get(cv.CAP_PROP_FRAME_WIDTH))
         height = int(cap.get(cv.CAP_PROP_FRAME_HEIGHT))
         totalRGB = width * height * 3
-        threshold = totalRGB * threshold / 100
+        dinamicThreshold = totalRGB * self.threshold / 100
 
         # Loop through the video frames
         while True:
@@ -114,32 +97,84 @@ class lwpda():
             if not ret:
                 break
 
-            if lwpda.isSimilar(self, actualFrame, previousFrame, threshold): 
+            if lwpda.isSimilar(self, actualFrame, previousFrame, dinamicThreshold): 
                 # Repeat bounding boxes from previous frame
-                annotatedFrame = lwpda.repeatDetectionsPreviousFrame(self, actualFrame, results, boundingBoxes)
+                annotatedFrame = lwpda.repeatDetectionsPreviousFrame(self, actualFrame, results, boundingBoxes, masks)
 
             else: 
                 # Send actual frame to YOLO process
-                results = lwpda.processingActualFrame(self, model, actualFrame, previousFrame, boundingBoxes)
+                results = lwpda.processingActualFrame(self, model, actualFrame, boundingBoxes, masks)
                 annotatedFrame = results[0].plot()
                 previousFrame = actualFrame
 
-            # Display the annotated frame
-            #cv.imshow("YOLOv8 Inference with LWPDA", annotatedFrame)
-            #cv.waitKey(int(1000/(cap.get(cv.CAP_PROP_FPS))))
-            #cv.waitKey(1)
+            if self.show == True:
+                # Display the annotated frame
+                cv.imshow(f"{self.model} Inference with LWPDA", annotatedFrame)
+                cv.waitKey(int(1000/(cap.get(cv.CAP_PROP_FPS))))
 
-        return boundingBoxes
+        return boundingBoxes, masks
 
-    def writingDetections(self, pathDir:str, pathResult:str , threshold:int) -> None:
+    def repeatDetectionsPreviousFrame(self, actualFrame, results, boundingBoxes = None, masks = None):
+        '''
+        Repeating annotations from the last processed frame
+        '''
+        # Debug
+        if self.verbose: print('Repeating detections')
 
-        allVideos = os.listdir(pathDir)
-        videoFiles = [file for file in allVideos if file.endswith((".mp4", ".avi"))]
+        result = results[0]
+        classes, coordenates = (result.boxes.cls.tolist()), (result.boxes.xyxy.tolist())
+        # Saving detections to write in txt later
+        if boundingBoxes is not None:
+            boundingBoxes += [[classes]+[coordenates]]
 
-        for video in videoFiles:
-            txtName = lwpda.knowVideoName(self, video)
-            boundingBoxes = lwpda.calculatingDetectionsTxt(self, pathDir+'/'+video, threshold)
-            lwpda.writingBoundingBoxes(self, boundingBoxes, pathResult, txtName)
+        if masks is not None and result.masks is not None:
+            masksCoordenates = (result.masks.xy)
+            masksCoordenates = [mask.tolist() for mask in masksCoordenates]
+            masks += [[classes]+[masksCoordenates]]
+
+        # Plotting 
+        annotations = results[0].plot(img = actualFrame)
+
+        return annotations
+
+    def processingActualFrame(self, model, actualFrame, boundingBoxes = None, masks = None) -> list:
+        '''
+        Processing Yolo and saving detections to write it on txts
+        '''
+        if self.verbose: print('Processing frame')
+        # Processing the model
+        results = model(actualFrame, verbose = self.verbose)
+        result = results[0]
+
+        # Saving detections to write in txt later
+        if masks is not None and result.masks is not None:
+            classes, masksCoordenates = (result.boxes.cls.tolist()), (result.masks.xy)
+            masksCoordenates = [mask.tolist() for mask in masksCoordenates]
+            masks += [[classes]+[masksCoordenates]]
+
+        if boundingBoxes is not None:
+            classes, coordenates = (result.boxes.cls.tolist()), (result.boxes.xyxy.tolist())
+            boundingBoxes += [[classes]+[coordenates]]
+
+        return results
+
+    def writingBoundingBoxes(self, boundingBoxes: list, pathResult: str, txtName: str) -> None:
+            '''
+            Write txts from the bounding boxes to a especifc path
+            '''
+            with open(str(pathResult)+'/'+str(txtName)+'.txt','w') as file:
+                for x in range(len(boundingBoxes)):
+                    file.write(str(boundingBoxes[x])+'\n')
+                file.close()
+
+    def writingMasks(self, masks: list, pathResult: str, txtName: str) -> None:
+            '''
+            Write txts from the bounding boxes to a especifc path
+            '''
+            with open(str(pathResult)+'/'+str(txtName)+'.txt','w') as file:
+                for (classe, mask) in masks:
+                    file.write(str([classe, mask])+'\n')
+                file.close()
 
     def iou(self, detectionA:list, detectionB:list) -> float: 
         '''
@@ -168,12 +203,30 @@ class lwpda():
     
         return iou
 
-    def calculatingVideoProcessTime(self, pathVideo:str, threshold:int) -> float:
+    def timeVideos(self, pathDir:str, pathResult:str, txtName = 'videoTime') -> None:
+        '''
+        Generate txt with processing time of each video
+        Txts are used to compare the processing time
+        pathDir is where your dataset is
+        pathResult is where you would like to save the results
+        threshold can be set 0 to 100
+        '''
+        # Open directory with all videos
+        allVideos = os.listdir(pathDir)
+        videoFiles = [file for file in allVideos if file.endswith((".mp4", ".avi"))]
+        videoTimes = []
+        for video in videoFiles:
+            # Process the video
+            videoTimes += [lwpda.calculatingVideoProcessTime(self, pathDir+video)]
+        
+        lwpda.writingVideoTimes(self, videoTimes, pathResult, txtName)
+
+    def calculatingVideoProcessTime(self, pathVideo:str) -> float:
             '''
             Calculate time process of a video using LWPDA
             '''
     
-            model = YOLO('yolov8n.pt')
+            model = YOLO(self.model)
 
             # The first frame showed in the video take more time to be showed
             # So, we process a random image just to initiate the camera and the model
@@ -187,7 +240,7 @@ class lwpda():
             width = int(cap.get(cv.CAP_PROP_FRAME_WIDTH))
             height = int(cap.get(cv.CAP_PROP_FRAME_HEIGHT))
             totalRGB = width * height * 3
-            threshold = totalRGB * threshold / 100
+            dinamicThreshold = totalRGB * self.threshold / 100
 
             # Loop through the video frames
             start = time.time()
@@ -198,19 +251,20 @@ class lwpda():
                 if not ret:
                     break
 
-                if lwpda.isSimilar(self, actualFrame, previousFrame, threshold): 
+                if lwpda.isSimilar(self, actualFrame, previousFrame, dinamicThreshold): 
                     # Repeat bounding boxes from previous frame
-                    annotatedFrame = lwpda.repeatDetectionsPreviousFrame(self, actualFrame, results, None)
+                    annotatedFrame = lwpda.repeatDetectionsPreviousFrame(self, actualFrame, results)
 
                 else: 
                     # Send actual frame to YOLO process
-                    results = lwpda.processingActualFrame(self, model, actualFrame, previousFrame, None)
+                    results = lwpda.processingActualFrame(self, model, actualFrame)
                     annotatedFrame = results[0].plot()
                     previousFrame = actualFrame
             
-                #cv.imshow("YOLOv8 Inference with LWPDA", annotatedFrame)
-                #cv.waitKey(int(1000/(cap.get(cv.CAP_PROP_FPS))))
-                #cv.waitKey(1)
+                if self.show == True:
+                    # Display the annotated frame
+                    cv.imshow(f"{self.model} Inference with LWPDA", annotatedFrame)
+                    cv.waitKey(int(1000/(cap.get(cv.CAP_PROP_FPS))))
 
             end = time.time()
             return end - start
@@ -225,31 +279,22 @@ class lwpda():
         
         file.close()
 
-    def timeVideos(self, pathDir:str, pathResult:str, threshold:int, txtName = 'videoTime') -> None:
-        '''
-        Generate txt with processing time of each video
-        Txts are used to compare the processing time
-        pathDir is where your dataset is
-        pathResult is where you would like to save the results
-        threshold can be set 0 to 100
-        '''
-        # Open directory with all videos
+    def timeFrames(self, pathDir:str, pathResult:str) -> None:
+
         allVideos = os.listdir(pathDir)
         videoFiles = [file for file in allVideos if file.endswith((".mp4", ".avi"))]
-        videoTimes = []
         for video in videoFiles:
-            # Process the video
-            videoTimes += [lwpda.calculatingVideoProcessTime(self, pathDir+video, threshold)]
-        
-        lwpda.writingVideoTimes(self, videoTimes, pathResult, txtName)
+            txtName = lwpda.knowVideoName(self, video)
+            frameTimes = lwpda.calculatingFramesProcessTime(self, pathDir+video)
+            lwpda.writingFrameTimes(self, frameTimes, pathResult, txtName)
 
-    def calculatingFramesProcessTime(self, pathVideo:str, threshold:int) -> list:
+    def calculatingFramesProcessTime(self, pathVideo:str) -> list:
         '''
         Calculate process time of each frame from a video using LWPDA
         '''
 
         # Start the model
-        model = YOLO('yolov8n.pt')
+        model = YOLO(self.model)
 
         # The first frame showed in the video take more time to be showed (overhead)
         # So, we process a random image just to initiate the camera and the model
@@ -263,7 +308,7 @@ class lwpda():
         width = int(cap.get(cv.CAP_PROP_FRAME_WIDTH))
         height = int(cap.get(cv.CAP_PROP_FRAME_HEIGHT))
         totalRGB = width * height * 3
-        threshold = totalRGB * threshold / 100
+        dinamicThreshold = totalRGB * self.threshold / 100
 
         # Loop through the video frames
         framesTimes = []
@@ -275,19 +320,20 @@ class lwpda():
             if not ret:
                 break
 
-            if previousFrame is not None and lwpda.isSimilar(self, actualFrame, previousFrame, threshold): 
+            if previousFrame is not None and lwpda.isSimilar(self, actualFrame, previousFrame, dinamicThreshold): 
                 # Repeat bounding boxes from previous frame
-                annotatedFrame = lwpda.repeatDetectionsPreviousFrame(self, actualFrame, results, None)
+                annotatedFrame = lwpda.repeatDetectionsPreviousFrame(self, actualFrame, results)
 
             else: 
                 # Send actual frame to YOLO process
-                results = lwpda.processingActualFrame(self, model, actualFrame, previousFrame, None)
+                results = lwpda.processingActualFrame(self, model, actualFrame)
                 annotatedFrame = results[0].plot()
                 previousFrame = actualFrame
             
-            cv.imshow("YOLOv8 Inference with LWPDA", annotatedFrame)
-            #cv.waitKey(int(1000/(cap.get(cv.CAP_PROP_FPS))))
-            cv.waitKey(1)
+            if self.show == True:
+                # Display the annotated frame
+                cv.imshow(f"{self.model} Inference with LWPDA", annotatedFrame)
+                cv.waitKey(int(1000/(cap.get(cv.CAP_PROP_FPS))))
 
             # Calculating frame process time
             end = time.time()
@@ -301,14 +347,6 @@ class lwpda():
         '''
         file = open(str(pathResult)+str(txtName)+'.txt','w')
         for x in range(len(framesTimes)):
-            file.write(f'[{framesTimes[x]}]\n')
+            file.write(str(framesTimes[x]) +'\n')
 
-    def timeFrames(self, pathDir:str, pathResult:str , threshold:int) -> None:
-
-        allVideos = os.listdir(pathDir)
-        videoFiles = [file for file in allVideos if file.endswith((".mp4", ".avi"))]
-        for video in videoFiles:
-            txtName = lwpda.knowVideoName(self, video)
-            frameTimes = lwpda.calculatingFramesProcessTime(self, pathDir+video, threshold)
-            lwpda.writingFrameTimes(self, frameTimes, pathResult, txtName)
 
