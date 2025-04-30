@@ -19,6 +19,7 @@ import cv2 as cv
 from ultralytics import YOLO
 import os
 from ultralytics.utils.plotting import Annotator
+from shapely.geometry import Polygon
 
 class lwpda():
     def __init__(self, model, threshold = 0, verbose = True, show = True):
@@ -176,33 +177,6 @@ class lwpda():
                     file.write(str([classe, mask])+'\n')
                 file.close()
 
-    def iou(self, detectionA:list, detectionB:list) -> float: 
-        '''
-        IOU is a common metric to compare the precision of the bounding boxes
-        In our article, we used the original Bounding Box (YOLO precision) as Ground-Truth
-        This function is based on https://pyimagesearch.com/2016/11/07/intersection-over-union-iou-for-object-detection/
-        '''
-    
-        xA = max(detectionA[0], detectionB[0])
-        yA = max(detectionA[1], detectionB[1])
-        xB = min(detectionA[2], detectionB[2])
-        yB = min(detectionA[3], detectionB[3])
-    
-        # compute the area of intersection rectangle
-        interArea = max(0, xB - xA + 1) * max(0, yB - yA + 1)
-    
-        # compute the area of both the prediction and ground-truth
-        # rectangles
-        boxAArea = (detectionA[2] - detectionA[0] + 1) * (detectionA[3] - detectionA[1] + 1)
-        boxBArea = (detectionB[2] - detectionB[0] + 1) * (detectionB[3] - detectionB[1] + 1)
-    
-        # compute the intersection over union by taking the intersection
-        # area and dividing it by the sum of prediction + ground-truth
-        # areas - the interesection area
-        iou = interArea / float(boxAArea + boxBArea - interArea)
-    
-        return iou
-
     def timeVideos(self, pathDir:str, pathResult:str, txtName = 'videoTime') -> None:
         '''
         Generate txt with processing time of each video
@@ -349,4 +323,43 @@ class lwpda():
         for x in range(len(framesTimes)):
             file.write(str(framesTimes[x]) +'\n')
 
+    def iou(self, detectionA:list, detectionB:list) -> float: 
+        '''
+        IOU is a common metric to compare the precision of the bounding boxes
+        In our article, we used the original Bounding Box (YOLO precision) as Ground-Truth
+        This function is based on https://pyimagesearch.com/2016/11/07/intersection-over-union-iou-for-object-detection/
+        '''
+    
+        xA = max(detectionA[0], detectionB[0])
+        yA = max(detectionA[1], detectionB[1])
+        xB = min(detectionA[2], detectionB[2])
+        yB = min(detectionA[3], detectionB[3])
+    
+        # compute the area of intersection rectangle
+        interArea = max(0, xB - xA + 1) * max(0, yB - yA + 1)
+    
+        # compute the area of both the prediction and ground-truth
+        # rectangles
+        boxAArea = (detectionA[2] - detectionA[0] + 1) * (detectionA[3] - detectionA[1] + 1)
+        boxBArea = (detectionB[2] - detectionB[0] + 1) * (detectionB[3] - detectionB[1] + 1)
+    
+        # compute the intersection over union by taking the intersection
+        # area and dividing it by the sum of prediction + ground-truth
+        # areas - the interesection area
+        iou = interArea / float(boxAArea + boxBArea - interArea)
+    
+        return iou
+
+    def iouSegmentation(self, maskA: list, maskB: list) -> float:
+
+        # Create polygons from points
+        polygon1 = Polygon(maskA)
+        polygon2 = Polygon(maskB)
+
+        # Calculate intersection and union areas
+        intersectionArea = polygon1.intersection(polygon2).area
+        unionArea = polygon1.union(polygon2).area
+        # Compute IoU
+        if unionArea > 0: return intersectionArea/unionArea
+        return 0
 
