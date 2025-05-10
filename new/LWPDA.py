@@ -51,16 +51,25 @@ class lwpda():
         if '/' not in pathVideo: name = pathVideo[:-4]
         return name
 
-    def writingDetections(self, pathDir:str, pathResult:str) -> None:
+    def experiments(self, pathDir:str, pathResult:str) -> None:
 
         allVideos = os.listdir(pathDir)
         videoFiles = [file for file in allVideos if file.endswith((".mp4", ".avi"))]
 
         for video in videoFiles:
             txtName = lwpda.knowVideoName(self, video)
-            boundingBoxes, masks = lwpda.calculatingDetectionsTxt(self, pathDir+'/'+video)
+            results = lwpda.calculatingDetectionsTxt(self, pathDir+'/'+video)
+            boundingBoxes, masks = results[0], results[1]
+            videoTime, framesTimes = results[2], results[3]
+            
+            lwpda.writingFrameTimes(self, framesTimes, pathResult, txtName)
+            
+            videoTimes += [videoTime]
+    
             lwpda.writingBoundingBoxes(self, boundingBoxes, pathResult, txtName)
             lwpda.writingMasks(self, masks, pathResult, txtName+'masks')
+            
+        lwpda.writingVideoTimes(self, videoTimes, pathResult, txtName)
 
     def knowVideoName(self, pathVideo:str) -> str:
         '''
@@ -90,9 +99,10 @@ class lwpda():
         height = int(cap.get(cv.CAP_PROP_FRAME_HEIGHT))
         totalRGB = width * height * 3
         dinamicThreshold = totalRGB * self.threshold / 100
-
+        startVideo = time.time()
         # Loop through the video frames
         while True:
+            startFrame = time.time()
             # Read a frame from the video
             ret, actualFrame = cap.read()
             if not ret:
@@ -112,8 +122,14 @@ class lwpda():
                 # Display the annotated frame
                 cv.imshow(f"{self.model} Inference with LWPDA", annotatedFrame)
                 cv.waitKey(int(1000/(cap.get(cv.CAP_PROP_FPS))))
-
-        return boundingBoxes, masks
+                
+            endFrame = time.time()
+            framesTimes += [endFrame-startFrame]
+            
+        endVideo = time.time()
+        videoTime = endVideo - startVideo
+        
+        return boundingBoxes, masks, videoTime, framesTimes
 
     def repeatDetectionsPreviousFrame(self, actualFrame, results, boundingBoxes = None, masks = None):
         '''
