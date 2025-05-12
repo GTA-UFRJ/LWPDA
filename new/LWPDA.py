@@ -379,3 +379,60 @@ class lwpda():
         if unionArea > 0: return intersectionArea/unionArea
         return 0
 
+    def loadData(self, filepath: str) -> list:
+        data = []
+        with open(filepath, 'r') as f:
+            for line in f:
+                classes, boxes = eval(line)[0], eval(line)[1]
+                data.append((classes, boxes))
+        return data
+
+    def evaluateMAP(self, groundTruths: str, predictions: str, iouThreshold=0.5):
+        totalTP = 0
+        totalFP = 0
+        totalFN = 0
+        groundTruths = lwpda.loadData(self, groundTruths)
+        predictions = lwpda.loadData(self, predictions)
+        
+        for gt, pred in zip(groundTruths, predictions):
+            print(zip(groundTruths, predictions))
+            gtClasses, gtBoxes = gt
+            predClasses, predBoxes = pred
+
+            matchedGT = set()
+            TP = 0
+            FP = 0
+
+            for predCls, predBox in zip(predClasses, predBoxes):
+                matchFound = False
+                maxIOU = 0
+                print(predBox)
+                for index, (gtCls, gtBox) in enumerate(zip(gtClasses, gtBoxes)):
+                    if index in matchedGT:
+                        continue
+                    if predCls == gtCls and lwpda.iou(self, predBox, gtBox) >= iouThreshold and lwpda.iou(self, predBox, gtBox) > maxIOU:
+                        idx = index
+                        matchFound = True
+                        print(idx)
+                        
+                if not matchFound:
+                    FP += 1
+                    print('FP')
+                else:
+                    TP += 1
+                    matchedGT.add(idx)
+                    matchFound = True
+                    
+            FN = len(gtBoxes) - len(matchedGT)
+            totalTP += TP
+            totalFP += FP
+            totalFN += FN
+
+        precision = totalTP / (totalTP + totalFP + 1e-10)
+        recall = totalTP / (totalTP + totalFN + 1e-10)
+        averagePrecision = precision  # Aproximação: AP ≈ P quando recall é fixo
+        return averagePrecision, precision, recall
+
+a = lwpda('yolov8n.pt', threshold = 0.5, verbose = True, show = True)
+ground_truths = lwpda.evaluateMAP(a, 'txtTest.txt', 'txtTest.txt')
+print(ground_truths)
