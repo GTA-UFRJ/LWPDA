@@ -55,7 +55,8 @@ class lwpda():
 
         allVideos = os.listdir(pathDir)
         videoFiles = [file for file in allVideos if file.endswith((".mp4", ".avi"))]
-
+        videoTimes = []
+        
         for video in videoFiles:
             txtName = lwpda.knowVideoName(self, video)
             results = lwpda.calculatingDetectionsTxt(self, pathDir+'/'+video)
