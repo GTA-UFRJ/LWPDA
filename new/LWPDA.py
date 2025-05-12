@@ -131,7 +131,7 @@ class lwpda():
         
         return boundingBoxes, masks, videoTime, framesTimes
 
-    def repeatDetectionsPreviousFrame(self, actualFrame, results, boundingBoxes = None, masks = None):
+    def repeatDetectionsPreviousFrame(self, actualFrame, results, boundingBoxes = None, masks = None) -> list:
         '''
         Repeating annotations from the last processed frame
         '''
@@ -139,7 +139,7 @@ class lwpda():
         if self.verbose: print('Repeating detections')
 
         result = results[0]
-        classes, coordenates = (result.boxes.cls.tolist()), (result.boxes.xyxy.tolist())
+        classes, coordenates = ((result.boxes.cls.tolist()), result.boxes.conf.tolist()), (result.boxes.xyxy.tolist())
         # Saving detections to write in txt later
         if boundingBoxes is not None:
             boundingBoxes += [[classes]+[coordenates]]
@@ -165,12 +165,12 @@ class lwpda():
 
         # Saving detections to write in txt later
         if masks is not None and result.masks is not None:
-            classes, masksCoordenates = (result.boxes.cls.tolist()), (result.masks.xy)
+            classes, masksCoordenates = ((result.boxes.cls.tolist()), result.boxes.conf.tolist()), (result.masks.xy)
             masksCoordenates = [mask.tolist() for mask in masksCoordenates]
             masks += [[classes]+[masksCoordenates]]
 
         if boundingBoxes is not None:
-            classes, coordenates = (result.boxes.cls.tolist()), (result.boxes.xyxy.tolist())
+            classes, coordenates = ((result.boxes.cls.tolist()), result.boxes.conf.tolist()), (result.boxes.xyxy.tolist())
             boundingBoxes += [[classes]+[coordenates]]
 
         return results
@@ -387,7 +387,7 @@ class lwpda():
                 data.append((classes, boxes))
         return data
 
-    def evaluateMAP(self, groundTruths: str, predictions: str, iouThreshold=0.5):
+    def evaluateMAP(self, groundTruths: str, predictions: str, iouThreshold=0.5) -> tuple:
         totalTP = 0
         totalFP = 0
         totalFN = 0
@@ -431,8 +431,22 @@ class lwpda():
         precision = totalTP / (totalTP + totalFP + 1e-10)
         recall = totalTP / (totalTP + totalFN + 1e-10)
         averagePrecision = precision  # Aproximação: AP ≈ P quando recall é fixo
-        return averagePrecision, precision, recall
+        return totalFP, totalTP, totalFN
 
-a = lwpda('yolov8n.pt', threshold = 0.5, verbose = True, show = True)
-ground_truths = lwpda.evaluateMAP(a, 'txtTest.txt', 'txtTest.txt')
-print(ground_truths)
+    def mAP(self, groundTruthDirectory: str, predictionsDirectory: str, iouThreshold: float) -> None:
+        groundTruthlist = os.listdir(groundTruthDirectory).sort()
+        predictionsList = os.listdir(predictionsDirectory).sort()
+        totalFP, totalTP, totalFN = [], [], []
+        for video in groundTruthlist:
+            if 'mask' not in video:
+                tempTotalFP, tempTotalTP, tempTotalFN = lwpda.evaluateMAP(self, groundTruthDirectory+video,
+                                                               predictionsDirectory+video, iouThreshold)
+                totalFP += tempTotalFP
+                totalFN += tempTotalFN
+                totalTP += tempTotalTP
+        precision = totalTP / (totalTP + totalFP + 1e-10)
+        recall = totalTP / (totalTP + totalFN + 1e-10)
+        averagePrecision = precision
+
+        return averagePrecision
+
