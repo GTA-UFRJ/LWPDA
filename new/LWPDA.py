@@ -101,8 +101,8 @@ class lwpda():
         dinamicThreshold = totalRGB * self.threshold / 100
         startVideo = time.time()
 
-        frametimes = []
-        
+        framesTimes = []
+
         # Loop through the video frames
         while True:
             startFrame = time.time()
