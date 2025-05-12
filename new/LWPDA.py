@@ -56,21 +56,22 @@ class lwpda():
         allVideos = os.listdir(pathDir)
         videoFiles = [file for file in allVideos if file.endswith((".mp4", ".avi"))]
         videoTimes = []
-        
+
         for video in videoFiles:
             txtName = lwpda.knowVideoName(self, video)
             results = lwpda.calculatingDetectionsTxt(self, pathDir+'/'+video)
             boundingBoxes, masks = results[0], results[1]
             videoTime, framesTimes = results[2], results[3]
             
-            lwpda.writingFrameTimes(self, framesTimes, pathResult, txtName)
+            lwpda.writingFrameTimes(self, framesTimes, pathResult+'frames/', txtName)
             
             videoTimes += [videoTime]
     
-            lwpda.writingBoundingBoxes(self, boundingBoxes, pathResult, txtName)
-            lwpda.writingMasks(self, masks, pathResult, txtName+'masks')
+            lwpda.writingBoundingBoxes(self, boundingBoxes, pathResult+'bb/', txtName)
+            if masks != '':
+                lwpda.writingMasks(self, masks, pathResult+'bb/', txtName+'masks')
             
-        lwpda.writingVideoTimes(self, videoTimes, pathResult, txtName)
+        lwpda.writingVideoTimes(self, videoTimes, pathResult+'videos/', txtName)
 
     def knowVideoName(self, pathVideo:str) -> str:
         '''
