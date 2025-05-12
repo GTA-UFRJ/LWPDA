@@ -68,7 +68,9 @@ class lwpda():
             videoTimes += [videoTime]
     
             lwpda.writingBoundingBoxes(self, boundingBoxes, pathResult+'bb/', txtName)
-            if masks != '':
+            print(type(masks))
+            print(masks)
+            if masks is not None:
                 lwpda.writingMasks(self, masks, pathResult+'bb/', txtName+'masks')
             
         lwpda.writingVideoTimes(self, videoTimes, pathResult+'videos/', txtName)
