@@ -393,51 +393,92 @@ class lwpda():
                 data.append((classes, boxes))
         return data
 
-    def evaluateMAP(self, groundTruths: str, predictions: str, iouThreshold=0.5) -> tuple:
-        totalTP = 0
-        totalFP = 0
-        totalFN = 0
+    def evaluateMAP(self, dictionary: dict, groundTruths: str, predictions: str, iouThreshold=0.5) -> dict:
         groundTruths = lwpda.loadData(self, groundTruths)
         predictions = lwpda.loadData(self, predictions)
-        
+
         for gt, pred in zip(groundTruths, predictions):
-            print(zip(groundTruths, predictions))
             gtClasses, gtBoxes = gt
+            gtClasses, gtConfiability = gtClasses
+
             predClasses, predBoxes = pred
+            predClasses, predConfiability = predClasses
 
-            matchedGT = set()
-            TP = 0
-            FP = 0
+            # Calculating False Positives (FP) and True Positives (TP)
+            lwpda.calculatingTPFP(self, dictionary, gtClasses, gtBoxes, gtConfiability,
+                                   predClasses, predBoxes, predConfiability, iouThreshold)
 
-            for predCls, predBox in zip(predClasses, predBoxes):
+            # Calculating False Negatives (FN)
+            lwpda.calculatingFN(self, dictionary, gtClasses, gtBoxes, gtConfiability,
+                                   predClasses, predBoxes, predConfiability, iouThreshold)
+        return dictionary
+
+    def addingFalseNegative (dictionary: dict, classe: float) -> None:
+        if classe not in dictionary.keys():
+            dictionary.update({classe: [[None],['FN']]})
+        else:
+            dictionary[classe][0] += [None]
+            dictionary[classe][1] += ['FN']
+    
+    def addingFalsePositive (dictionary: dict, classe: float, confiability: float) -> None:
+        if classe not in dictionary.keys():
+            dictionary.update({classe: [[confiability],['FP']]})
+        else:
+            dictionary[classe][0] += [confiability]
+            dictionary[classe][1] += ['FP']
+
+    def addingTruePositive (dictionary: dict, classe: float, confiability: float) -> None:
+        if classe not in dictionary.keys():
+            dictionary.update({classe: [[confiability],['TP']]})
+        else:
+            dictionary[classe][0] += [confiability]
+            dictionary[classe][1] += ['TP']
+
+    def calculatingTPFP(self, dictionary: dict, gtClasses: list, gtBoxes: list, gtConfiability: list, predClasses: list, predBoxes: list, predConfiability: list, iouThreshold: float) -> None:
+
+        matchedGT = set()
+
+        for predCls, predBox, predConf in zip(predClasses, predBoxes, predConfiability):
                 matchFound = False
                 maxIOU = 0
-                print(predBox)
-                for index, (gtCls, gtBox) in enumerate(zip(gtClasses, gtBoxes)):
-                    if index in matchedGT:
+                classe = predCls
+                confiability = predConf
+                # Seeing ground-truth and what match with predictions
+                for index, (gtCls, gtBox, gtConf) in enumerate(zip(gtClasses, gtBoxes, gtConfiability)):
+                    if index in matchedGT: # Index already matched
                         continue
                     if predCls == gtCls and lwpda.iou(self, predBox, gtBox) >= iouThreshold and lwpda.iou(self, predBox, gtBox) > maxIOU:
                         idx = index
                         matchFound = True
-                        print(idx)
+                        maxIOU = lwpda.iou(self, predBox, gtBox)
                         
                 if not matchFound:
-                    FP += 1
-                    print('FP')
-                else:
-                    TP += 1
-                    matchedGT.add(idx)
-                    matchFound = True
-                    
-            FN = len(gtBoxes) - len(matchedGT)
-            totalTP += TP
-            totalFP += FP
-            totalFN += FN
+                    lwpda.addingFalsePositive(dictionary, classe, confiability)
 
-        precision = totalTP / (totalTP + totalFP + 1e-10)
-        recall = totalTP / (totalTP + totalFN + 1e-10)
-        averagePrecision = precision  # Aproximação: AP ≈ P quando recall é fixo
-        return totalFP, totalTP, totalFN
+                else:
+                    lwpda.addingTruePositive(dictionary, classe, confiability)
+                    matchedGT.add(idx)
+
+    def calculatingFN(self, dictionary: dict, gtClasses: list, gtBoxes: list, gtConfiability: list, predClasses: list, predBoxes: list, predConfiability: list, iouThreshold: float) -> None:
+        matchedPred = set()
+
+        for gtCls, gtBox, gtConf in zip(gtClasses, gtBoxes, gtConfiability):
+                matchFound = False
+                maxIOU = 0
+                classe = gtCls
+                # Seeing predictions and what match with predictions
+                for index, (predCls, predBox, predConf) in enumerate(zip(predClasses, predBoxes, predConfiability)):
+                    if index in matchedPred: # Index already matched
+                        continue
+                    if predCls == gtCls and lwpda.iou(self, predBox, gtBox) >= iouThreshold and lwpda.iou(self, predBox, gtBox) > maxIOU:
+                        idx = index
+                        matchFound = True
+                        maxIOU = lwpda.iou(self, predBox, gtBox)
+                        
+                if not matchFound:
+                    lwpda.addingFalseNegative(dictionary, classe)
+                else:
+                    matchedPred.add(idx)
 
     def mAP(self, groundTruthDirectory: str, predictionsDirectory: str, iouThreshold: float) -> None:
         groundTruthlist = os.listdir(groundTruthDirectory).sort()
@@ -456,3 +497,8 @@ class lwpda():
 
         return averagePrecision
 
+a = {}
+classe = lwpda('yolov8n', 100, True, True)
+b = classe.evaluateMAP(a, './new/test.txt', './new/test1.txt')
+print(a)
+print(b)
