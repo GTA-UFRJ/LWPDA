@@ -51,6 +51,28 @@ class lwpda():
         if '/' not in pathVideo: name = pathVideo[:-4]
         return name
 
+    def fullExperiments(self, pathDirVideos:str, pathResult:str) -> None:
+        
+        for threshold in range(11):
+            lwpda.createPathResults(self, pathResult)
+            classe = lwpda(self.model, threshold*10, False, False)
+            classe.experiments(pathDirVideos, pathResult)
+
+    def createPathResults(self, pathResult):
+        path = pathResult+f'/{self.model}/'
+        if not os.path.exists(path):
+            os.makedirs(path)
+        for x in range(11):
+            tempPath = path+f'{x}/'
+            if not os.path.exists(tempPath):
+                os.makedirs(tempPath)
+            if not os.path.exists(tempPath+'bb/'):
+                os.makedirs(tempPath+'bb/')
+            if not os.path.exists(tempPath+'videos/'):
+                os.makedirs(tempPath+'videos/')
+            if not os.path.exists(tempPath+'frames/'):
+                os.makedirs(tempPath+'frames/')
+
     def experiments(self, pathDir:str, pathResult:str) -> None:
 
         allVideos = os.listdir(pathDir)
@@ -69,8 +91,7 @@ class lwpda():
     
             lwpda.writingBoundingBoxes(self, boundingBoxes, pathResult+'bb/', txtName)
 
-            if masks != []:
-                lwpda.writingMasks(self, masks, pathResult+'bb/', txtName+'masks')
+            lwpda.writingMasks(self, masks, pathResult+'bb/', txtName+'masks')
             
         lwpda.writingVideoTimes(self, videoTimes, pathResult+'videos/', txtName)
 
@@ -447,7 +468,7 @@ class lwpda():
                 for index, (gtCls, gtBox, gtConf) in enumerate(zip(gtClasses, gtBoxes, gtConfiability)):
                     if index in matchedGT: # Index already matched
                         continue
-                    if predCls == gtCls and lwpda.iou(self, predBox, gtBox) >= iouThreshold and lwpda.iou(self, predBox, gtBox) > maxIOU:
+                    if predCls == gtCls and lwpda.iouS(self, predBox, gtBox) >= iouThreshold and lwpda.iou(self, predBox, gtBox) > maxIOU:
                         idx = index
                         matchFound = True
                         maxIOU = lwpda.iou(self, predBox, gtBox)
@@ -480,25 +501,98 @@ class lwpda():
                 else:
                     matchedPred.add(idx)
 
-    def mAP(self, groundTruthDirectory: str, predictionsDirectory: str, iouThreshold: float) -> None:
-        groundTruthlist = os.listdir(groundTruthDirectory).sort()
-        predictionsList = os.listdir(predictionsDirectory).sort()
-        totalFP, totalTP, totalFN = [], [], []
+    def dictMAP(self, groundTruthDirectory: str, predictionsDirectory: str, iouThreshold: float) -> dict:
+        '''
+        Create a dictionary that help to managing the results
+        Dictionary for a directory
+        This function is going to be used in mAP function
+        '''
+        groundTruthlist = os.listdir(groundTruthDirectory)
+        predictionsList = os.listdir(predictionsDirectory)
+        if len(predictionsList) != len(groundTruthlist): raise "Exception"
+        dictionary = {}
+        n = 0
         for video in groundTruthlist:
-            if 'mask' not in video:
-                tempTotalFP, tempTotalTP, tempTotalFN = lwpda.evaluateMAP(self, groundTruthDirectory+video,
-                                                               predictionsDirectory+video, iouThreshold)
-                totalFP += tempTotalFP
-                totalFN += tempTotalFN
-                totalTP += tempTotalTP
-        precision = totalTP / (totalTP + totalFP + 1e-10)
-        recall = totalTP / (totalTP + totalFN + 1e-10)
-        averagePrecision = precision
+            if 'mask' in video:
+                if self.verbose: print('Processing video:',n)
+                lwpda.evaluateMAPSegmentation(self, dictionary, groundTruthDirectory+video, predictionsDirectory+video, iouThreshold)
+                n+=1
 
-        return averagePrecision
+        return dictionary
 
+    def evaluateMAPSegmentation(self, dictionary: dict, groundTruths: str, predictions: str, iouThreshold=0.5) -> dict:
+        '''
+        Create (or update) a dictionary for each video in directory
+        '''
+        groundTruths = lwpda.loadData(self, groundTruths)
+        predictions = lwpda.loadData(self, predictions)
+
+        for gt, pred in zip(groundTruths, predictions):
+            gtClasses, gtBoxes = gt
+            gtClasses, gtConfiability = gtClasses
+
+            predClasses, predBoxes = pred
+            predClasses, predConfiability = predClasses
+
+            # Calculating False Positives (FP) and True Positives (TP)
+            lwpda.calculatingTPFPSegmentation(self, dictionary, gtClasses, gtBoxes, gtConfiability,
+                                   predClasses, predBoxes, predConfiability, iouThreshold)
+
+            # Calculating False Negatives (FN)
+            lwpda.calculatingFNSegmentation(self, dictionary, gtClasses, gtBoxes, gtConfiability,
+                                   predClasses, predBoxes, predConfiability, iouThreshold)
+        return dictionary
+
+    def calculatingTPFPSegmentation(self, dictionary: dict, gtClasses: list, gtBoxes: list, gtConfiability: list, predClasses: list, predBoxes: list, predConfiability: list, iouThreshold: float) -> None:
+
+        matchedGT = set()
+
+        for predCls, predBox, predConf in zip(predClasses, predBoxes, predConfiability):
+                matchFound = False
+                maxIOU = 0
+                classe = predCls
+                confiability = predConf
+                # Seeing ground-truth and what match with predictions
+                for index, (gtCls, gtBox, gtConf) in enumerate(zip(gtClasses, gtBoxes, gtConfiability)):
+                    if index in matchedGT: # Index already matched
+                        continue
+                    if predCls == gtCls and lwpda.iouSegmentation(self, predBox, gtBox) >= iouThreshold and lwpda.iouSegmentation(self, predBox, gtBox) > maxIOU:
+                        idx = index
+                        matchFound = True
+                        maxIOU = lwpda.iouSegmentation(self, predBox, gtBox)
+                        
+                if not matchFound:
+                    lwpda.addingFalsePositive(dictionary, classe, confiability)
+
+                else:
+                    lwpda.addingTruePositive(dictionary, classe, confiability)
+                    matchedGT.add(idx)
+
+    def calculatingFNSegmentation(self, dictionary: dict, gtClasses: list, gtBoxes: list, gtConfiability: list, predClasses: list, predBoxes: list, predConfiability: list, iouThreshold: float) -> None:
+        matchedPred = set()
+
+        for gtCls, gtBox, gtConf in zip(gtClasses, gtBoxes, gtConfiability):
+                matchFound = False
+                maxIOU = 0
+                classe = gtCls
+                # Seeing predictions and what match with predictions
+                for index, (predCls, predBox, predConf) in enumerate(zip(predClasses, predBoxes, predConfiability)):
+                    if index in matchedPred: # Index already matched
+                        continue
+                    if predCls == gtCls and lwpda.iouSegmentation(self, predBox, gtBox) >= iouThreshold and lwpda.iouSegmentation(self, predBox, gtBox) > maxIOU:
+                        idx = index
+                        matchFound = True
+                        maxIOU = lwpda.iouSegmentation(self, predBox, gtBox)
+                        
+                if not matchFound:
+                    lwpda.addingFalseNegative(dictionary, classe)
+                else:
+                    matchedPred.add(idx)
+
+path = 'C:/Users/hugol/Desktop/IC/allTests/yolov8nseg/0/bb/'
+groundTruth = 'C:/Users/hugol/Desktop/IC/allTests/yolov8nseg/10/bb/'
 a = {}
 classe = lwpda('yolov8n', 100, True, True)
-b = classe.evaluateMAP(a, './new/test.txt', './new/test1.txt')
+b = classe.dictMAP(groundTruth, path, 0.5)
 print(a)
 print(b)
