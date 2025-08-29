@@ -11,33 +11,32 @@ class LWPDA:
         self.threshold_percent = threshold
         self.verbose = verbose
         self.show_video = show
-        print(f'LWPDA inicializado com o modelo "{model_path}" e threshold de {threshold}%.')
+        print(f'LWPDA inicializado com o modelo "{model_path}" e threshold de {self.threshold_percent}%.')
 
-    @staticmethod
-    def is_similar(frame_a, frame_b, similarity_threshold: float) -> bool:
+    # CORREÇÃO: Removido o decorador @staticmethod
+    def is_similar(self, frame_a, frame_b) -> bool:
         """Compara dois frames e retorna True se forem similares."""
         if frame_b is None:
             return False
         
+        # Lógica de comparação melhorada que calcula a porcentagem de similaridade
         diff = cv.absdiff(frame_a, frame_b)
         non_similar_pixels = cv.countNonZero(cv.cvtColor(diff, cv.COLOR_BGR2GRAY))
         total_pixels = frame_a.shape[0] * frame_a.shape[1]
         
-        # Esta é uma métrica de similaridade mais robusta que a original
-        similarity = 1 - (non_similar_pixels / total_pixels)
+        # Se não houver pixels, os frames são idênticos
+        if total_pixels == 0:
+            return True
+            
+        similarity_percentage = (1 - (non_similar_pixels / total_pixels)) * 100
         
-        # A lógica original foi mantida como referência, mas a de cima é melhor
-        # x = abs((frame_b - frame_a))
-        # z = ((0 <= x) & (x <= 10)).sum()
-        # return (z >= similarity_threshold)
-        
-        return similarity * 100 >= (100 - self.threshold_percent)
-
+        # O frame é considerado similar se a similaridade for maior ou igual ao threshold
+        # Ex: se threshold_percent for 10%, a similaridade precisa ser >= 90%
+        return similarity_percentage >= (100 - self.threshold_percent)
 
     def _process_video_generator(self, video_path: str):
         """
         Gerador que processa um vídeo frame a frame, aplicando a lógica LWPDA.
-        Retorna (yields) informações de cada frame.
         """
         cap = cv.VideoCapture(video_path)
         if not cap.isOpened():
@@ -46,10 +45,6 @@ class LWPDA:
         previous_frame = None
         last_results = None
         
-        width = int(cap.get(cv.CAP_PROP_FRAME_WIDTH))
-        height = int(cap.get(cv.CAP_PROP_FRAME_HEIGHT))
-        dinamic_threshold = (width * height * 3) * self.threshold_percent / 100
-
         while cap.isOpened():
             ret, actual_frame = cap.read()
             if not ret:
@@ -58,9 +53,15 @@ class LWPDA:
             start_time = time.time()
             
             is_processed_by_yolo = False
-            if self.is_similar(actual_frame, previous_frame, dinamic_threshold):
+            
+            # CORREÇÃO: A chamada da função foi simplificada, removendo o parâmetro desnecessário
+            if self.is_similar(actual_frame, previous_frame):
                 if self.verbose: print('Frame similar. Repetindo detecções.')
-                annotated_frame = last_results[0].plot(img=actual_frame)
+                # Garante que last_results não seja None antes de usar
+                if last_results:
+                    annotated_frame = last_results[0].plot(img=actual_frame)
+                else:
+                    annotated_frame = actual_frame # Usa o frame original se não houver detecção anterior
                 results_to_save = last_results
             else:
                 if self.verbose: print('Processando frame com YOLO.')
@@ -100,11 +101,9 @@ class LWPDA:
                 result = frame_data['results'][0]
                 classes = (result.boxes.cls.tolist(), result.boxes.conf.tolist())
                 
-                # Salva Bounding Boxes
                 boxes = result.boxes.xyxy.tolist()
                 all_bounding_boxes.append([classes, boxes])
                 
-                # Salva Máscaras de Segmentação (se existirem)
                 if result.masks:
                     masks = [m.tolist() for m in result.masks.xy]
                     all_masks.append([classes, masks])
