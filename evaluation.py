@@ -24,14 +24,24 @@ def iou(box_a: list, box_b: list) -> float:
 def iou_segmentation(mask_a: list, mask_b: list) -> float:
     """Calcula a IoU para máscaras de segmentação."""
     try:
-        poly1 = Polygon(mask_a)
-        poly2 = Polygon(mask_b)
-        intersection_area = poly1.intersection(poly2).area
-        union_area = poly1.union(poly2).area
+        poly_a = Polygon(mask_a)
+        poly_b = Polygon(mask_b)
+
+        # Se o polígono for inválido, tenta corrigi-lo com buffer(0)
+        if not poly_a.is_valid:
+            poly_a = poly_a.buffer(0)
+        if not poly_b.is_valid:
+            poly_b = poly_b.buffer(0)
+
+        intersection_area = poly_a.intersection(poly_b).area
+        union_area = poly_a.union(poly_b).area
+        
         if union_area == 0:
             return 0.0
         return intersection_area / union_area
+        
     except Exception as e:
+        # A mensagem de erro ainda é útil caso o buffer(0) não resolva
         print(f"Erro ao calcular IoU de segmentação: {e}")
         return 0.0
 

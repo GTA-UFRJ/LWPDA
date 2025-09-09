@@ -284,7 +284,38 @@ class lwpda():
                     cv.imshow(f"{self.model} Inference with LWPDA", annotatedFrame)
                     cv.waitKey(int(1000/(cap.get(cv.CAP_PROP_FPS))))
 
-            end = time.time()
+           # O mAP é a média das APs de todas as classes.
+        mean_ap = sum(all_aps) / len(all_aps)
+        return mean_ap
+
+    except FileNotFoundError:
+        print(f"Erro: O arquivo '{file_path}' não foi encontrado.")
+        return None
+    except (ValueError, SyntaxError):
+        print(f"Erro: O conteúdo do arquivo '{file_path}' não é um dicionário Python válido.")
+        return None
+    except Exception as e:
+        print(f"Ocorreu um erro inesperado: {e}")
+        return None
+
+if __name__ == "__main__":
+    # Este código só roda quando você executa 'python LWPDA.py'
+
+    # Exemplo de como orquestrar um experimento
+    # model_path = 'yolov8n.pt'
+    # processor = LWPDA(model=model_path, threshold=30)
+    # processor.fullExperiments(pathDirVideos='path/to/videos', pathResult='path/to/results')
+
+    # Loop para calcular o mAP
+    for x in range(11):
+        fileName = f'{x}.txt'
+        mean_average_precision = calculate_map_from_file(fileName)
+
+        if mean_average_precision is not None:
+            print("\n" + "="*40)
+            print(f"O Mean Average Precision (mAP) de {fileName} final é: {mean_average_precision:.4f}")
+            print("="*40)
+         end = time.time()
             return end - start
 
     def writingVideoTimes(self, videoTimes: list, pathResult: str, txtName: str) -> None:

@@ -93,19 +93,19 @@ def evaluate_map_for_experiment(
 if __name__ == "__main__":
     # --- Etapa 1: Executar o processamento dos vídeos ---
     # A função agora usa as variáveis importadas do arquivo config.py
-    run_experiment_for_all_thresholds(
-        model_path=str(config.MODEL_PATH),
-        videos_dir=str(config.VIDEOS_DIRECTORY),
-        results_dir=str(config.RESULTS_DIRECTORY),
-        threshold_levels=config.THRESHOLD_LEVELS,
-        show_video=config.SHOW_VIDEO_DURING_PROCESSING
-    )
+    #run_experiment_for_all_thresholds(
+    #    model_path=str(config.MODEL_PATH),
+    #    videos_dir=str(config.VIDEOS_DIRECTORY),
+    #    results_dir=str(config.RESULTS_DIRECTORY),
+    #    threshold_levels=config.THRESHOLD_LEVELS,
+    #    show_video=config.SHOW_VIDEO_DURING_PROCESSING
+    #)
     
     # --- Etapa 2: Avaliar os resultados e calcular o mAP ---
     # O diretório de Ground Truth é construído dinamicamente a partir das configurações.
     # Ele assume que os resultados do nível 0 (YOLO puro) são a referência.
     model_stem = Path(config.MODEL_NAME).stem
-    gt_base_path = config.RESULTS_DIRECTORY / model_stem / "0"
+    gt_base_path = config.RESULTS_DIRECTORY / model_stem / "10"
     
     ground_truth_dir = gt_base_path / "masks" if config.IS_SEGMENTATION_MODEL else gt_base_path / "bb"
     

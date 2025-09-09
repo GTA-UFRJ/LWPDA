@@ -12,7 +12,7 @@ VIDEOS_DIRECTORY = "/home/guardai/antunes/IMAGENET/all_videos/"
 #    O script criará a subpasta /yolov8n-seg/ e as pastas /0, /1, etc. dentro dela.
 #    Se você quiser a pasta 'yolov8nseg1', pode renomear o modelo ou ajustar o main.py.
 #    A forma mais simples é usar o caminho base aqui.
-RESULTS_DIRECTORY = "/home/guardai/antunes/allTests/"
+RESULTS_DIRECTORY = Path("/mnt/allTests/segmentationNew/")
 
 # --- Configurações do Modelo ---
 # 3. Defina o nome do modelo
@@ -24,7 +24,7 @@ MODEL_PATH = BASE_DIR / MODEL_NAME # Deixe assim se o .pt estiver na mesma pasta
 SHOW_VIDEO_DURING_PROCESSING = False
 
 # 5. O loop de 0 a 10 já está configurado aqui
-THRESHOLD_LEVELS = range(11)
+THRESHOLD_LEVELS = range(4,5)
 
 # --- Parâmetros de Avaliação (não serão usados nesta execução) ---
 IOU_THRESHOLD = 0.5
