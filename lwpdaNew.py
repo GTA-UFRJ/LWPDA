@@ -55,19 +55,19 @@ class LWPDA:
             start_time = time.time()
             
             # ALTERADO: A chamada para is_similar agora passa o limiar dinâmico
-            if self.is_similar(actual_frame, previous_frame, dynamic_threshold):
-                if self.verbose: print('Frame similar. Repetindo detecções.')
-                if last_results:
-                    annotated_frame = last_results[0].plot(img=actual_frame)
-                else:
-                    annotated_frame = actual_frame
-                results_to_save = last_results
-            else:
-                if self.verbose: print('Processando frame com YOLO.')
-                last_results = self.model(actual_frame, verbose=False)
-                annotated_frame = last_results[0].plot()
-                previous_frame = actual_frame
-                results_to_save = last_results
+            #if self.is_similar(actual_frame, previous_frame, dynamic_threshold):
+            #    if self.verbose: print('Frame similar. Repetindo detecções.')
+            #    if last_results:
+            #        annotated_frame = last_results[0].plot(img=actual_frame)
+            #    else:
+            #        annotated_frame = actual_frame
+            #    results_to_save = last_results
+            #else:
+            if self.verbose: print('Processando frame com YOLO.')
+            last_results = self.model(actual_frame, verbose=False)
+            annotated_frame = last_results[0].plot()
+            previous_frame = actual_frame
+            results_to_save = last_results
             
             end_time = time.time()
             frame_time = end_time - start_time
