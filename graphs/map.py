@@ -8,7 +8,7 @@ map_valores = [0.0719, 0.1039, 0.2090, 0.3330, 0.4644, 0.6024, 0.7450, 0.8561, 0
 
 # --- 2. Criação do Gráfico ---
 # Define o tamanho da figura para melhor visualização
-fig, ax = plt.subplots(figsize=(15, 7))
+fig, ax = plt.subplots(figsize=(10, 7))
 
 # Plota a linha principal com marcadores nos pontos
 ax.plot(experimentos, map_valores, marker='o', linestyle='-', color='b', label='mAP')
