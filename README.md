@@ -9,6 +9,13 @@ Este repositório apresenta o **LWPDA (Lightweight Perceptual Difference Algorit
 
 Desenvolvido pelo Grupo de Teleinformática e Automação (GTA) da UFRJ.
 
+Autor: Hugo Leandro Anteuns (antunes@gta.ufrj.br)
+
+Orientadores: 
+- Rodrigo de Souza Couto (rodrigo@gta.ufrj.br)
+- Pedro Henrique Cruz (cruz@gta.ufrj.br)
+- Luis Kosmalski (luish@gta.ufrj.br)
+
 ---
 
 ## Tabela de Conteúdos
@@ -33,9 +40,6 @@ Em sistemas de vigilância e análise de vídeo, o processamento contínuo de ca
 ## A Solução: O Algoritmo LWPDA
 
 Para resolver essa questão, propomos o **LWPDA**, um algoritmo projetado para ser uma primeira camada de filtragem rápida e eficiente. Ele compara quadros consecutivos e determina se a mudança visual entre eles é significativa o suficiente para justificar o acionamento de análises mais pesadas.
-
-#### Intuição do LWPDA
-[* **(Importante: Descreva aqui a ideia do seu algoritmo)**. Exemplo: O LWPDA opera no domínio da cor e da textura, extraindo um descritor compacto de cada quadro. A distância entre os descritores de quadros consecutivos indica o nível de similaridade perceptual entre eles, sendo robusto a pequenas variações de iluminação e ruído.*]
 
 #### Vantagens
 -   **Leve e Rápido**: Projetado para ter baixa latência e overhead computacional mínimo.
