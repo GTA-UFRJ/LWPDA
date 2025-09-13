@@ -16,7 +16,7 @@ def run_experiment_for_all_thresholds(
     videos_dir: str, 
     results_dir: str, 
     threshold_levels: range,
-    show_video: bool = False
+    show_video: bool = True
 ):
     """
     Executa o experimento LWPDA para um modelo com todos os thresholds configurados.

@@ -12,7 +12,7 @@ VIDEOS_DIRECTORY = "/home/guardai/antunes/IMAGENET/all_videos/"
 #    O script criará a subpasta /yolov8n-seg/ e as pastas /0, /1, etc. dentro dela.
 #    Se você quiser a pasta 'yolov8nseg1', pode renomear o modelo ou ajustar o main.py.
 #    A forma mais simples é usar o caminho base aqui.
-RESULTS_DIRECTORY = Path("/mnt/allTests/segmentationNew/")
+RESULTS_DIRECTORY = Path("/home/hugo/allTests/segmentationNew/")
 
 # --- Configurações do Modelo ---
 # 3. Defina o nome do modelo

@@ -284,19 +284,9 @@ class lwpda():
                     cv.imshow(f"{self.model} Inference with LWPDA", annotatedFrame)
                     cv.waitKey(int(1000/(cap.get(cv.CAP_PROP_FPS))))
 
-           # O mAP é a média das APs de todas as classes.
-        mean_ap = sum(all_aps) / len(all_aps)
-        return mean_ap
-
-    except FileNotFoundError:
-        print(f"Erro: O arquivo '{file_path}' não foi encontrado.")
-        return None
-    except (ValueError, SyntaxError):
-        print(f"Erro: O conteúdo do arquivo '{file_path}' não é um dicionário Python válido.")
-        return None
-    except Exception as e:
-        print(f"Ocorreu um erro inesperado: {e}")
-        return None
+            # O mAP é a média das APs de todas as classes.
+            mean_ap = sum(all_aps) / len(all_aps)
+            return mean_ap
 
 if __name__ == "__main__":
     # Este código só roda quando você executa 'python LWPDA.py'
