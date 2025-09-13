@@ -3,7 +3,7 @@
 from pathlib import Path
 import config  # <- Importa o novo arquivo de configurações
 
-from lwpdaNew import LWPDA
+from LWPDA import LWPDA
 from utils import (
     get_video_name, create_experiment_paths, write_to_json, write_times_to_txt
 )
