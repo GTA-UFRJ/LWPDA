@@ -9,10 +9,10 @@ Este repositório apresenta o **LWPDA (Lightweight Perceptual Difference Algorit
 
 Desenvolvido pelo Grupo de Teleinformática e Automação (GTA) da UFRJ.
 
-Autor: Hugo Leandro Anteuns (antunes@gta.ufrj.br)
+Autor: Hugo Leandro Anteuns (antunes@gta.ufrj.br / https://www.gta.ufrj.br/~antunes/)
 
 Orientadores: 
-- Rodrigo de Souza Couto (rodrigo@gta.ufrj.br)
+- Rodrigo de Souza Couto (rodrigo@gta.ufrj.br) 
 - Pedro Henrique Cruz (cruz@gta.ufrj.br)
 - Luis Kosmalski (luish@gta.ufrj.br)
 
@@ -63,15 +63,15 @@ Os gráficos gerados demonstram a eficiência do LWPDA em comparação com os m�
 
 **1. CDF (Função de Distribuição Cumulativa) do Tempo de Processamento**
 Este gráfico ilustra a velocidade do LWPDA para segmentação de objetos em realação ao YOLO sem a utilização do LWPDA.
-![CDF dos Algoritmos](graphs/output/frame/grafico_cdf_estilo_final.png)
+![CDF dos Algoritmos](graphs/segmentation/frame/grafico_cdf_estilo_final.png)
 
 **2. Performance vs. Limiar de Similaridade**
 Aqui, comparamos o tempo de processamento em diferentes limiares. O gráfico mostra que o LWPDA pode ajudar reduzir o tempo de processamento.
-![Comparativo de Performance](graphs/output/frame/grafico_linhas_com_tracejado.png)
+![Comparativo de Performance](graphs/segmentation/frame/grafico_linhas_com_tracejado.png)
 
 **3. Precisão vs. Limiar de Similaridade**
 Este mostra a precisão da segmentação quando utilizado o LWPDA.
-![men Average PRecision](graphs/output/grafico_map_evolucao.png)
+![men Average PRecision](graphs/segmentation/grafico_map_evolucao.png)
 ---
 
 ## Começando

@@ -1,0 +1,22 @@
+Avaliando para Nível de Threshold: 0
+  - mAP: 0.0808
+Avaliando para Nível de Threshold: 1
+  - mAP: 0.1399
+Avaliando para Nível de Threshold: 2
+  - mAP: 0.2775
+Avaliando para Nível de Threshold: 3
+  - mAP: 0.4284
+Avaliando para Nível de Threshold: 4
+  - mAP: 0.5878
+Avaliando para Nível de Threshold: 5
+  - mAP: 0.7482
+Avaliando para Nível de Threshold: 6
+  - mAP: 0.8708
+Avaliando para Nível de Threshold: 7
+  - mAP: 0.9345
+Avaliando para Nível de Threshold: 8
+  - mAP: 0.9726
+Avaliando para Nível de Threshold: 9
+  - mAP: 0.9930
+Avaliando para Nível de Threshold: 10
+  - mAP: 1.0000

@@ -24,8 +24,8 @@ MODEL_PATH = BASE_DIR / MODEL_NAME # Deixe assim se o .pt estiver na mesma pasta
 SHOW_VIDEO_DURING_PROCESSING = False
 
 # 5. O loop de 0 a 10 já está configurado aqui
-THRESHOLD_LEVELS = range(4,5)
+THRESHOLD_LEVELS = range(11)
 
 # --- Parâmetros de Avaliação (não serão usados nesta execução) ---
 IOU_THRESHOLD = 0.5
-IS_SEGMENTATION_MODEL = "-seg" in MODEL_NAME
+IS_SEGMENTATION_MODEL = False
