@@ -53,22 +53,21 @@ Para resolver essa questão, propomos o **LWPDA**, um algoritmo projetado para s
 
 ---
 
-## Resultados Comparativos
+## Resultados LWPDA e Segmentação (yolov8n-seg)
 
 Os gráficos gerados demonstram a eficiência do LWPDA em comparação com os métodos de referência e o custo de processar todos os frames com YOLO.
 
 **1. CDF (Função de Distribuição Cumulativa) do Tempo de Processamento**
-Este gráfico ilustra a velocidade de cada algoritmo. O LWPDA se destaca por [ *descreva o resultado, ex: processar uma alta proporção de quadros em tempo muito baixo* ].
-
-*(Dica: Substitua esta imagem pela sua `grafico_cdf_estilo_final.png`)*
-![CDF dos Algoritmos](caminho/para/sua/imagem_cdf.png)
+Este gráfico ilustra a velocidade do LWPDA para segmentação de objetos em realação ao YOLO sem a utilização do LWPDA.
+![CDF dos Algoritmos](graphs/output/frame/grafico_cdf_estilo_final.png)
 
 **2. Performance vs. Limiar de Similaridade**
-Aqui, comparamos o tempo de processamento em diferentes limiares. O gráfico mostra que o LWPDA [ *descreva o resultado, ex: mantém um desempenho estável e baixo em comparação com alternativas como o SSIM* ].
+Aqui, comparamos o tempo de processamento em diferentes limiares. O gráfico mostra que o LWPDA pode ajudar reduzir o tempo de processamento.
+![Comparativo de Performance](graphs/output/frame/grafico_linhas_com_tracejado.png)
 
-*(Dica: Substitua esta imagem pela sua `grafico_linhas_com_tracejado.png`)*
-![Comparativo de Performance](caminho/para/sua/imagem_linhas.png)
-
+**3. Precisão vs. Limiar de Similaridade**
+Este mostra a precisão da segmentação quando utilizado o LWPDA.
+![men Average PRecision](graphs/output/grafico_map_evolucao.png)
 ---
 
 ## Começando
@@ -97,17 +96,5 @@ Siga estas instruções para configurar o ambiente e executar os testes.
     ```bash
     pip install -r requirements.txt
     ```
-    (Se o arquivo `requirements.txt` não existir, crie-o com `pip freeze > requirements.txt` ou instale as dependências manualmente).
 
 ---
-
-## Como Usar
-
-Para executar um teste de processamento em um vídeo, use o script principal. O foco é habilitar a comparação entre os métodos.
-
-```bash
-# Exemplo de execução com o algoritmo LWPDA
-python seu_script_principal.py --video entrada.mp4 --method lwpda --threshold 0.85
-
-# Exemplo de execução com um método de baseline para comparação
-python seu_script_principal.py --video entrada.mp4 --method ssim --threshold 0.9
