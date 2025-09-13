@@ -1,58 +1,70 @@
-# LWPDA: Lightweight Perceptual Difference Algorithms
+# LWPDA: Um Algoritmo Leve para Detecção de Diferença Perceptual em Vídeos
 
 ![GitHub language count](https://img.shields.io/github/languages/count/GTA-UFRJ/LWPDA)
 ![GitHub top language](https://img.shields.io/github/languages/top/GTA-UFRJ/LWPDA)
 ![GitHub repo size](https://img.shields.io/github/repo-size/GTA-UFRJ/LWPDA)
 ![GitHub last commit](https://img.shields.io/github/last-commit/GTA-UFRJ/LWPDA)
 
+Este repositório apresenta o **LWPDA (Lightweight Perceptual Difference Algorithm)**, um novo algoritmo de baixo custo computacional para medir a similaridade visual entre quadros de vídeo. O projeto inclui um framework de testes completo para comparar a performance do LWPDA com outros métodos de referência, como SSIM, MSE, Image Hashing e Histogramas.
 
-Um framework para análise e comparação de algoritmos leves de detecção de diferença perceptual em quadros de vídeo, visando a otimização de pipelines de processamento. Desenvolvido pelo Grupo de Teleinformática e Automação (GTA) da UFRJ.
+Desenvolvido pelo Grupo de Teleinformática e Automação (GTA) da UFRJ.
 
 ---
 
 ## Tabela de Conteúdos
-- [Sobre o Projeto](#sobre-o-projeto)
-- [Funcionalidades](#funcionalidades)
-- [Resultados Visuais](#resultados-visuais)
+- [O Problema](#o-problema)
+- [A Solução: O Algoritmo LWPDA](#a-solução-o-algoritmo-lwpda)
+- [Funcionalidades do Repositório](#funcionalidades-do-repositório)
+- [Resultados Comparativos](#resultados-comparativos)
 - [Começando](#começando)
   - [Pré-requisitos](#pré-requisitos)
   - [Instalação](#instalação)
 - [Como Usar](#como-usar)
-- [Algoritmos Implementados](#algoritmos-implementados)
+- [Métodos de Comparação (Baselines)](#métodos-de-comparação-baselines)
 - [Licença](#licença)
 - [Agradecimentos](#agradecimentos)
 
 ---
 
-## Sobre o Projeto
+## O Problema
 
-Em muitos sistemas de análise de vídeo em tempo real, o processamento de cada quadro individualmente com modelos de deep learning (como o YOLO) pode ser computacionalmente caro e redundante, especialmente quando há pouca mudança entre quadros consecutivos.
+Em sistemas de vigilância e análise de vídeo, o processamento contínuo de cada quadro com modelos de detecção de objetos (como o YOLO) é computacionalmente intensivo e, muitas vezes, redundante. Cenas estáticas ou com pouca movimentação geram uma grande quantidade de quadros visualmente similares, cujo processamento completo consome recursos desnecessariamente.
 
-O **LWPDA** surge como uma solução para este problema. Ele fornece um ambiente de teste para avaliar diferentes algoritmos de baixo custo computacional (ex: SSIM, Hashing, Histogramas) que podem rapidamente determinar se um quadro é suficientemente "novo" ou "diferente" do anterior para justificar o processamento por um modelo mais pesado. O objetivo é reduzir a carga de processamento sem perder informações visuais relevantes.
+## A Solução: O Algoritmo LWPDA
+
+Para resolver essa questão, propomos o **LWPDA**, um algoritmo projetado para ser uma primeira camada de filtragem rápida e eficiente. Ele compara quadros consecutivos e determina se a mudança visual entre eles é significativa o suficiente para justificar o acionamento de análises mais pesadas.
+
+#### Intuição do LWPDA
+[* **(Importante: Descreva aqui a ideia do seu algoritmo)**. Exemplo: O LWPDA opera no domínio da cor e da textura, extraindo um descritor compacto de cada quadro. A distância entre os descritores de quadros consecutivos indica o nível de similaridade perceptual entre eles, sendo robusto a pequenas variações de iluminação e ruído.*]
+
+#### Vantagens
+-   **Leve e Rápido**: Projetado para ter baixa latência e overhead computacional mínimo.
+-   **Eficaz**: Capaz de discernir entre mudanças triviais e eventos relevantes no vídeo.
+-   **Customizável**: Permite o ajuste de um limiar de similaridade para adaptar a sensibilidade do filtro.
 
 ---
 
-## Funcionalidades
+## Funcionalidades do Repositório
 
--   **Implementação de Múltiplos Algoritmos**: Inclui implementações para SSIM, MSE, Image Hashing e Comparação de Histogramas.
--   **Framework de Análise de Performance**: Mede e compara o tempo de processamento (latência) de cada algoritmo.
--   **Análise de Precisão**: Avalia a eficácia de cada método com base em um limiar de similaridade.
--   **Geração de Gráficos Comparativos**: Cria visualizações detalhadas, como CDFs e gráficos de linha, para facilitar a análise dos resultados.
+-   **Implementação do LWPDA**: O código-fonte completo do algoritmo proposto.
+-   **Framework de Comparação**: Um ambiente de testes robusto para executar e avaliar o LWPDA contra outros quatro algoritmos de referência.
+-   **Análise de Performance**: Scripts para medir métricas essenciais, como tempo de processamento (latência) e distribuição (CDF, P95).
+-   **Geração Automática de Gráficos**: Ferramentas para criar visualizações comparativas de performance, facilitando a análise dos resultados.
 
 ---
 
-## Resultados Visuais
+## Resultados Comparativos
 
-A performance dos algoritmos pode ser comparada através de gráficos gerados pelo framework.
+Os gráficos gerados demonstram a eficiência do LWPDA em comparação com os métodos de referência e o custo de processar todos os frames com YOLO.
 
 **1. CDF (Função de Distribuição Cumulativa) do Tempo de Processamento**
-Este gráfico mostra a proporção de quadros processados dentro de um determinado tempo. Curvas mais à esquerda e que sobem mais rápido representam algoritmos mais eficientes.
+Este gráfico ilustra a velocidade de cada algoritmo. O LWPDA se destaca por [ *descreva o resultado, ex: processar uma alta proporção de quadros em tempo muito baixo* ].
 
 *(Dica: Substitua esta imagem pela sua `grafico_cdf_estilo_final.png`)*
 ![CDF dos Algoritmos](caminho/para/sua/imagem_cdf.png)
 
-**2. Comparativo de Performance vs. Limiar**
-Este gráfico compara métricas de tempo de processamento (como Mediana e P95) em diferentes limiares de similaridade, com o YOLO como baseline de custo.
+**2. Performance vs. Limiar de Similaridade**
+Aqui, comparamos o tempo de processamento em diferentes limiares. O gráfico mostra que o LWPDA [ *descreva o resultado, ex: mantém um desempenho estável e baixo em comparação com alternativas como o SSIM* ].
 
 *(Dica: Substitua esta imagem pela sua `grafico_linhas_com_tracejado.png`)*
 ![Comparativo de Performance](caminho/para/sua/imagem_linhas.png)
@@ -61,15 +73,13 @@ Este gráfico compara métricas de tempo de processamento (como Mediana e P95) e
 
 ## Começando
 
-Siga estas instruções para obter uma cópia local do projeto e executá-la.
+Siga estas instruções para configurar o ambiente e executar os testes.
 
 ### Pré-requisitos
-
 -   Python 3.8+
 -   Pip (Gerenciador de pacotes do Python)
 
 ### Instalação
-
 1.  **Clone o repositório:**
     ```bash
     git clone [https://github.com/GTA-UFRJ/LWPDA.git](https://github.com/GTA-UFRJ/LWPDA.git)
@@ -83,20 +93,21 @@ Siga estas instruções para obter uma cópia local do projeto e executá-la.
     python -m venv venv
     source venv/bin/activate  # No Windows: venv\Scripts\activate
     ```
-4.  **Instale as dependências:**
-    (É uma boa prática criar um arquivo `requirements.txt`)
+4.  **Instale as dependências a partir do `requirements.txt`:**
     ```bash
     pip install -r requirements.txt
     ```
-    Se o arquivo `requirements.txt` não existir, instale as bibliotecas principais manualmente:
-    ```bash
-    pip install opencv-python-headless matplotlib numpy scikit-image imagehash
-    ```
+    (Se o arquivo `requirements.txt` não existir, crie-o com `pip freeze > requirements.txt` ou instale as dependências manualmente).
+
 ---
 
 ## Como Usar
 
-Para executar a análise principal, utilize o script principal a partir da linha de comando. Exemplo:
+Para executar um teste de processamento em um vídeo, use o script principal. O foco é habilitar a comparação entre os métodos.
 
 ```bash
-python seu_script_principal.py --video entrada.mp4 --output saida.mp4 --method ssim --threshold 0.9
+# Exemplo de execução com o algoritmo LWPDA
+python seu_script_principal.py --video entrada.mp4 --method lwpda --threshold 0.85
+
+# Exemplo de execução com um método de baseline para comparação
+python seu_script_principal.py --video entrada.mp4 --method ssim --threshold 0.9
