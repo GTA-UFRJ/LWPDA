@@ -8,7 +8,7 @@ map_valores = [0.0719, 0.1039, 0.2090, 0.3330, 0.4644, 0.6024, 0.7450, 0.8561, 0
 
 # --- 2. Criação do Gráfico ---
 # Define o tamanho da figura para melhor visualização
-fig, ax = plt.subplots(figsize=(12, 7))
+fig, ax = plt.subplots(figsize=(15, 7))
 
 # Plota a linha principal com marcadores nos pontos
 ax.plot(experimentos, map_valores, marker='o', linestyle='-', color='b', label='mAP')
@@ -16,12 +16,12 @@ ax.plot(experimentos, map_valores, marker='o', linestyle='-', color='b', label='
 # --- 3. Melhorias no Gráfico ---
 # Adiciona o valor de cada ponto diretamente no gráfico
 for i, valor in enumerate(map_valores):
-    ax.text(experimentos[i], valor + 0.02, f'{valor:.4f}', ha='center', fontsize=9)
+    ax.text(experimentos[i], valor + 0.02, f'{valor:.4f}', ha='center', fontsize=10)
 
 # Adiciona Título e Rótulos aos Eixos
-ax.set_title('Evolução do Mean Average Precision (mAP) por Experimento', fontsize=16)
-ax.set_xlabel('Threshold', fontsize=12)
-ax.set_ylabel('Valor do mAP', fontsize=12)
+ax.set_title('Evolução do Mean Average Precision (mAP) por Limiar', fontsize=16)
+ax.set_xlabel('Limiar de similaridade (%)', fontsize=15)
+ax.set_ylabel('mAP Relativo', fontsize=15)
 
 # Garante que todos os números de experimento apareçam no eixo X
 ax.set_xticks(experimentos)
@@ -32,11 +32,8 @@ ax.set_ylim(0, 1.1)
 # Adiciona uma grade para facilitar a leitura
 ax.grid(True, linestyle='--', alpha=0.6)
 
-# Adiciona a legenda (útil se você adicionar mais linhas no futuro)
-ax.legend()
-
 # Ajusta o layout e salva o arquivo
 plt.tight_layout()
-plt.savefig('/home/hugo/Desktop/LWPDA/graphs/ouput/grafico_map_evolucao.png')
+plt.savefig('/home/hugo/Desktop/LWPDA/graphs/segmentation/grafico_map_evolucao.png')
 
 print("Gráfico 'grafico_map_evolucao.png' salvo com sucesso!")
