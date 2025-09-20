@@ -70,13 +70,13 @@ else:
     ax1.set_yscale('log')
     
     ax1.set_title('Comparação do Tempo de Processamento (Escala Logarítmica)', fontsize=16)
-    ax1.set_xlabel('Threshold', fontsize=12)
+    ax1.set_xlabel('Limiar de similaridade (%)', fontsize=12)
     ax1.set_ylabel('Tempo (segundos) - Escala Log', fontsize=12)
     ax1.set_xticklabels(['0', '10', '20', '30', '40', '50', '60', '70', '80', '90', '100'])
     ax1.yaxis.grid(True, which='both') # Adiciona grade para escala log
     
     plt.tight_layout() # Ajusta o layout para evitar cortes nos rótulos
-    plt.savefig('/home/hugo/Desktop/LWPDA/graphs/output/frame/boxplot_tempos_escala_log.png')
+    plt.savefig('/home/hugo/Desktop/LWPDA/graphs/segmentation/frame/boxplot_tempos_escala_log.png')
     print("\nGráfico 'boxplot_tempos_escala_log.png' salvo com sucesso!")
 
     # --- OPÇÃO 2: Box Plot com Eixo Y Limitado ---
@@ -95,13 +95,13 @@ else:
         print("Não foi possível calcular o limite do eixo Y. Pulando este ajuste.")
 
     ax2.set_title('Comparação do Tempo de Processamento (Eixo Y Limitado)', fontsize=16)
-    ax2.set_xlabel('Threshold', fontsize=12)
+    ax2.set_xlabel('Limiar de similaridade (%)', fontsize=12)
     ax2.set_ylabel('Tempo (segundos)', fontsize=12)
     ax2.set_xticklabels(['0', '10', '20', '30', '40', '50', '60', '70', '80', '90', '100'])
     ax2.yaxis.grid(True)
     
     plt.tight_layout()
-    plt.savefig('/home/hugo/Desktop/LWPDA/graphs/output/frame/boxplot_tempos_eixo_limitado.png')
+    plt.savefig('/home/hugo/Desktop/LWPDA/graphs/segmentation/frame/boxplot_tempos_eixo_limitado.png')
     print("Gráfico 'boxplot_tempos_eixo_limitado.png' salvo com sucesso!")
     
     # --- Bônus: Gráfico de Barras também com Escala Log ---
@@ -117,12 +117,12 @@ else:
     ax3.set_yscale('log')
     
     ax3.set_title('Média do Tempo de Processamento (Escala Logarítmica)', fontsize=16)
-    ax3.set_xlabel('Threshold', fontsize=12)
+    ax3.set_xlabel('Limiar de similaridade (%)', fontsize=12)
     ax3.set_ylabel('Tempo Médio (segundos) - Escala Log', fontsize=12)
     ax3.yaxis.grid(True, which='both')
 
     plt.tight_layout()
-    plt.savefig('/home/hugo/Desktop/LWPDA/graphs/output/frame/barras_tempos_media_escala_log.png')
+    plt.savefig('/home/hugo/Desktop/LWPDA/graphs/segmentation/frame/barras_tempos_media_escala_log.png')
     print("Gráfico 'barras_tempos_media_escala_log.png' salvo com sucesso!")
     labels = list(dados_por_experimento.keys())
     data = list(dados_por_experimento.values())
@@ -131,13 +131,13 @@ else:
     fig1, ax1 = plt.subplots(figsize=(12, 7))
     ax1.boxplot(data, patch_artist=True)
     
-    ax1.set_title('Comparação do Tempo de Processamento por Threshold', fontsize=16)
-    ax1.set_xlabel('Threshold', fontsize=12)
+    ax1.set_title('Comparação do Tempo de Processamento por Limiar de similaridade (%)', fontsize=16)
+    ax1.set_xlabel('Limiar de similaridade (%)', fontsize=12)
     ax1.set_ylabel('Tempo (segundos)', fontsize=12)
     ax1.set_xticklabels(['0', '10', '20', '30', '40', '50', '60', '70', '80', '90', '100'])
     ax1.yaxis.grid(True) # Adiciona uma grade para facilitar a leitura
     
-    plt.savefig('/home/hugo/Desktop/LWPDA/graphs/output/frame/boxplot_tempos.png')
+    plt.savefig('/home/hugo/Desktop/LWPDA/graphs/segmentation/frame/boxplot_tempos.png')
     print("\nGráfico 'boxplot_tempos.png' salvo com sucesso!")
     # plt.show() # Descomente para exibir o gráfico na tela
 
@@ -148,11 +148,11 @@ else:
     fig2, ax2 = plt.subplots(figsize=(12, 7))
     ax2.bar(['0', '10', '20', '30', '40', '50', '60', '70', '80', '90', '100'], medias, yerr=desvios_padrao, capsize=5, color='skyblue', ecolor='gray')
 
-    ax2.set_title('Média do Tempo de Processamento por Threshold', fontsize=16)
-    ax2.set_xlabel('Threshold', fontsize=12)
+    ax2.set_title('Média do Tempo de Processamento por Limiar de similaridade (%)', fontsize=16)
+    ax2.set_xlabel('Limiar de similaridade (%)', fontsize=12)
     ax2.set_ylabel('Tempo Médio (segundos)', fontsize=12)
     ax2.yaxis.grid(True)
 
-    plt.savefig('/home/hugo/Desktop/LWPDA/graphs/output/frame/barras_tempos_media.png')
+    plt.savefig('/home/hugo/Desktop/LWPDA/graphs/segmentation/frame/barras_tempos_media.png')
     print("Gráfico 'barras_tempos_media.png' salvo com sucesso!")
     # plt.show() # Descomente para exibir o gráfico na tela
