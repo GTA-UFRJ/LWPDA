@@ -39,7 +39,7 @@ for exp_nome in NOMES_EXPERIMENTOS:
             print(f"Erro ao ler o arquivo {arquivo_path}: {e}")
     if tempos:
         dados_por_experimento[exp_nome] = tempos
-        print(f"Experimento '{exp_nome}': {len(tempos)} medições coletadas.")
+        print(f"Experimento '{exp_nome}': {len(tempos)} medições de tempo coletadas.")
 
 # ==============================================================================
 # --- 3. GERAÇÃO DOS GRÁFICOS ---
@@ -54,21 +54,20 @@ else:
     medias = [np.mean(tempos) if tempos else 0 for tempos in data_sorted]
     desvios_padrao = [np.std(tempos) if tempos else 0 for tempos in data_sorted]
     
-    # --- GRÁFICO 1: LÓGICA FINAL E CORRETA ---
+    # --- GRÁFICO 1: VERSÃO FINAL COM RÓTULOS DE DADOS ---
     
     medias_algoritmo = medias[:-1]
     media_yolo = medias[-1]
     
-    fig_linha, ax_linha = plt.subplots(figsize=(12, 7))
+    fig_linha, ax_linha = plt.subplots(figsize=(10, 7))
 
     cor_lwpda = '#4800FF'
     cor_yolo = 'red'
 
     # 1. Plota a linha e os marcadores de círculo AZUIS de 0% a 90%.
-    #    O ponto de 90% terá o marcador de círculo aqui.
     ax_linha.plot(LABELS_BASE, medias_algoritmo, color=cor_lwpda, linestyle='-', marker='o', label='LWPDA')
 
-    # 2. Plota APENAS A LINHA tracejada VERMELHA de 90% a YOLO (sem marcadores).
+    # 2. Plota APENAS A LINHA tracejada VERMELHA de 90% a YOLO.
     ultimo_segmento_x = [len(LABELS_BASE) - 1, len(LABELS_BASE)]
     ultimo_segmento_y = [medias_algoritmo[-1], media_yolo]
     ax_linha.plot(ultimo_segmento_x, ultimo_segmento_y, color=cor_yolo, linestyle='--')
@@ -81,6 +80,24 @@ else:
     # 4. Adiciona as linhas de projeção para o ponto YOLO.
     ax_linha.plot([x_yolo_pos, x_yolo_pos], [0, y_yolo_pos], color='gray', linestyle='--')
     ax_linha.plot([0, x_yolo_pos], [y_yolo_pos, y_yolo_pos], color='gray', linestyle='--')
+    
+    # --- NOVO: 5. Adiciona os rótulos de texto com os valores em cada ponto ---
+    # Itera sobre TODOS os pontos (0% a 90% e YOLO), usando a lista 'medias' completa.
+    for i, media in enumerate(medias):
+        # Formata o texto para 3 casas decimais (ex: 0.055)
+        texto_label = f'{media:.3f}'
+        
+        # Adiciona o texto um pouco acima do ponto no gráfico
+        ax_linha.text(
+            x=i,                          # Posição X (o índice do ponto)
+            y=media + 0.001,              # Posição Y (o valor + um pequeno deslocamento para cima)
+            s=texto_label,                # O texto a ser exibido
+            ha='center',                  # Alinhamento horizontal centralizado
+            va='bottom',                  # Alinhamento vertical na base do texto
+            fontsize=9,                   # Tamanho da fonte
+            fontweight='bold',            # Deixa o texto em negrito para melhor leitura
+            color='#363636'               # Cor cinza escuro
+        )
 
     # Configuração final do gráfico
     ax_linha.set_title('Desempenho do Algoritmo em Segmentação', fontsize=16)
@@ -90,13 +107,13 @@ else:
     ax_linha.set_xticklabels(LABELS_COM_YOLO)
     ax_linha.grid(True, linestyle='--', alpha=0.6)
     ax_linha.legend()
-    ax_linha.set_ylim(bottom=0)
+    ax_linha.set_ylim(bottom=0, top=max(medias) * 1.15) # Aumenta um pouco o limite superior para o texto caber
     plt.tight_layout()
     plt.savefig('/home/hugo/Desktop/LWPDA/graphs/segmentation/frame/linha_tempos_medios_com_yolo.png')
     print("Gráfico 1/6 'linha_tempos_medios_com_yolo.png' salvo com sucesso!")
 
     # --- DEMAIS GRÁFICOS (permanecem inalterados) ---
-    # (O código para os outros 5 gráficos continua aqui...)
+    # ... (código para os outros 5 gráficos) ...
 
     # ==============================================================================
     # --- 4. EXIBIÇÃO DOS VALORES MÉDIOS ---
